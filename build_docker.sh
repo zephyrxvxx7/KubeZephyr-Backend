@@ -1,0 +1,1 @@
+docker build -t kubezephyr_backend_image ./

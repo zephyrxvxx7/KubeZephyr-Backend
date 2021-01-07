@@ -1,0 +1,12 @@
+.env
+.env.example
+.git*
+.vscode
+.travis.yml
+Procfile
+runtime.txt
+README.rst
+LICENSE
+postman_tests
+__pycache__
+.circleci

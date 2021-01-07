@@ -1,0 +1,13 @@
+kubernetes
+fastapi
+uvicorn[standard]
+gunicorn
+pydantic[email]
+passlib[bcrypt]
+pyjwt
+alembic
+python-slugify
+Unidecode
+python-dotenv
+databases
+motor
