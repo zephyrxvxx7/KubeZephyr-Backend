@@ -6,8 +6,8 @@ from starlette.exceptions import HTTPException
 from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
 
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
-from app.core.jwt_v2 import create_access_token
-from app.crud.shortcuts import check_free_username_and_email
+from app.core.jwt import create_access_token
+from app.crud.shortcuts import check_free_email
 from app.crud.user import create_user, get_user_by_email
 from app.db.mongodb import AsyncIOMotorClient, get_database
 from app.models.user import User, UserInCreate, UserInLogin, UserInResponse
@@ -56,7 +56,7 @@ async def login(
 async def register(
         user: UserInCreate = Body(..., embed=True), db: AsyncIOMotorClient = Depends(get_database)
 ):
-    await check_free_username_and_email(db, user.username, user.email)
+    await check_free_email(db, user.email)
 
     async with await db.start_session() as s:
         async with s.start_transaction():

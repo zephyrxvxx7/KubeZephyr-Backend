@@ -1,9 +1,10 @@
 from pydantic.main import BaseModel
+from pydantic.networks import EmailStr
 from app.models.rwmodel import MongoModel
 
 
 class TokenPayload(MongoModel):
-    username: str = ""
+    email: EmailStr = ""
 
 class Token(BaseModel):
     accsee_token: str

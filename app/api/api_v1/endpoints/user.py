@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body, Depends
 
 from app.core.jwt import get_current_user_authorizer
-from app.crud.shortcuts import check_free_username_and_email
+from app.crud.shortcuts import check_free_email
 from app.crud.user import update_user
 from app.db.mongodb import AsyncIOMotorClient, get_database
 from app.models.user import User, UserInResponse, UserInUpdate
@@ -25,7 +25,7 @@ async def update_current_user(
     if user.email == current_user.email:
         user.email = None
 
-    await check_free_username_and_email(db, user.username, user.email)
+    await check_free_email(db, user.email)
 
-    dbuser = await update_user(db, current_user.username, user)
+    dbuser = await update_user(db, current_user.email, user)
     return UserInResponse(user=User(**dbuser.dict(), token=current_user.token))
