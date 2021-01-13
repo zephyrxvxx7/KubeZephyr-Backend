@@ -12,10 +12,13 @@ class ProjectBase(MongoModel):
     volume: Optional[List[str]] = None
 
 class ProjectInDB(DBModelMixin, ProjectBase):
-    created_by_id: OID
+    owner_id: OID
 
 class ProjectInCreate(ProjectBase):
-    created_by_id: Optional[OID] = None
+    owner_id: Optional[OID] = None
 
 class ProjectInResponse(MongoModel):
     project: ProjectBase
+
+class ManyProjectInResponse(MongoModel):
+    project: List[ProjectBase]
