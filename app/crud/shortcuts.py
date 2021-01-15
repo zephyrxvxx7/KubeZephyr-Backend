@@ -8,10 +8,7 @@ from starlette.status import (
     HTTP_422_UNPROCESSABLE_ENTITY,
 )
 
-from app.models.rwmodel import OID
-from app.models.project import ProjectInDB
-from app.crud.user import get_user, get_user_by_email
-from app.crud.project import db_get_project_by_id
+from app.crud.user import get_user_by_email
 from app.db.mongodb import AsyncIOMotorClient
 
 

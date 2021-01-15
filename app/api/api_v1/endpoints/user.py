@@ -9,12 +9,12 @@ from app.models.user import User, UserInResponse, UserInUpdate
 router = APIRouter()
 
 
-@router.get("/user", response_model=UserInResponse, tags=["users"])
+@router.get("/users/me", response_model=UserInResponse, tags=["users"])
 async def retrieve_current_user(user: User = Depends(get_current_user_authorizer())):
     return UserInResponse(user=user)
 
 
-@router.put("/user", response_model=UserInResponse, tags=["users"])
+@router.put("/users/me", response_model=UserInResponse, tags=["users"])
 async def update_current_user(
     user: UserInUpdate = Body(..., embed=True),
     current_user: User = Depends(get_current_user_authorizer()),
