@@ -17,6 +17,11 @@ class ProjectInDB(DBModelMixin, ProjectBase):
 class ProjectInCreate(ProjectBase):
     owner_id: Optional[OID] = None
 
+class ProjectInUpdate(MongoModel):
+    name: Optional[str] = None
+    pod: Optional[List[str]] = None
+    service: Optional[List[str]] = None
+    volume: Optional[List[str]] = None
 class ProjectInResponse(MongoModel):
     project: ProjectBase
 

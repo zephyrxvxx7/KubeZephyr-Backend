@@ -29,9 +29,15 @@ def _get_authorization_token(authorization: str = Header(...)):
     return token
 
 
+def _get_authorization_token_optional(authorization: str = Header(None)):
+    if authorization:
+        return _get_authorization_token(authorization)
+    return ""
+
+
 async def _get_current_user(
     db: AsyncIOMotorClient = Depends(get_database), token: str = Depends(_get_authorization_token)
-) -> UserInDB:
+) -> User:
     try:
         payload = jwt.decode(token, str(SECRET_KEY), algorithms=[ALGORITHM])
         token_data = TokenPayload(**payload)
@@ -44,27 +50,20 @@ async def _get_current_user(
     if not dbuser:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="User not found")
     
-    user = UserInDB(**dbuser.dict(), token=token)
-    return user
-
-
-def _get_authorization_token_optional(authorization: str = Header(None)):
-    if authorization:
-        return _get_authorization_token(authorization)
-    return ""
+    return User(**dbuser.dict(), token=token)
 
 
 async def _get_current_user_optional(
     db: AsyncIOMotorClient = Depends(get_database),
     token: str = Depends(_get_authorization_token_optional),
-) -> Optional[UserInDB]:
+) -> Optional[User]:
     if token:
         return await _get_current_user(db, token)
 
     return None
 
 
-def get_current_user_authorizer(*, required: bool = True):
+def get_current_user_authorizer(*, required: bool = True) -> Optional[User]:
     if required:
         return _get_current_user
     else:

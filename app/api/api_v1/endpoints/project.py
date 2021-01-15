@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Body, Depends, Path
-from starlette.exceptions import HTTPException
+from fastapi import APIRouter, Body, Depends, Path, HTTPException
+
 from starlette.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
@@ -10,9 +10,10 @@ from starlette.status import (
 
 from app.core.jwt import get_current_user_authorizer
 from app.crud.project import (
-    db_create_project,
-    db_get_project_by_id,
-    db_get_many_project
+    crud_create_project,
+    crud_get_project_by_id,
+    crud_get_many_project,
+    crud_update_project_by_id
 ) 
 from app.db.mongodb import (
     AsyncIOMotorClient, 
@@ -21,16 +22,17 @@ from app.db.mongodb import (
 from app.models.rwmodel import OID
 from app.models.user import UserInDB
 from app.models.project import (
-    ProjectBase, 
+    ProjectBase,
+    ProjectInCreate,
     ProjectInResponse,
     ManyProjectInResponse,
-    ProjectInCreate
+    ProjectInUpdate
 )
 
 router = APIRouter()
 
 @router.post(
-    "/project",
+    "/projects",
     response_model=ProjectInResponse,
     tags=["projects"],
     status_code=HTTP_201_CREATED,
@@ -44,12 +46,12 @@ async def create_project(
 
     async with await db.start_session() as s:
         async with s.start_transaction():
-            dbproject = await db_create_project(db, project)
+            dbproject = await crud_create_project(db, project)
 
     return ProjectInResponse(project=ProjectBase(**dbproject.dict()))
 
 @router.get(
-    "/project",
+    "/projects",
     response_model=ManyProjectInResponse,
     tags=["projects"]
 )
@@ -57,7 +59,7 @@ async def get_project(
         user: UserInDB = Depends(get_current_user_authorizer()),
         db: AsyncIOMotorClient = Depends(get_database),
 ):
-    dbproject = await db_get_many_project(db, user)
+    dbproject = await crud_get_many_project(db, user)
     
     if not dbproject:
         raise HTTPException(
@@ -68,8 +70,8 @@ async def get_project(
     return ManyProjectInResponse(project=[ProjectBase(**pro.dict()) for pro in dbproject])
 
 @router.get(
-    "/project/{id}",
-    response_model=ProjectBase,
+    "/projects/{id}",
+    response_model=ProjectInResponse,
     tags=["projects"]
 )
 async def get_project_by_id(
@@ -77,7 +79,28 @@ async def get_project_by_id(
         user: UserInDB = Depends(get_current_user_authorizer()),
         db: AsyncIOMotorClient = Depends(get_database),
 ):
-    dbproject = await db_get_project_by_id(db, id, user)
+    dbproject = await crud_get_project_by_id(db, id, user)
+
+    if not dbproject:
+        raise HTTPException(
+            status_code=HTTP_404_NOT_FOUND,
+            detail=f"Project with id '{id}' not found"
+        )
+    
+    return ProjectInResponse(project=ProjectBase(**dbproject.dict()))
+
+@router.put(
+    "/projects/{id}",
+    response_model=ProjectInResponse,
+    tags=["projects"]
+)
+async def update_project_by_id(
+        id: OID = Path(...),
+        project: ProjectInUpdate = Body(..., embed=True),
+        user: UserInDB = Depends(get_current_user_authorizer()),
+        db: AsyncIOMotorClient = Depends(get_database)
+):
+    dbproject = await crud_update_project_by_id(db, id, project, user)
 
     if not dbproject:
         raise HTTPException(

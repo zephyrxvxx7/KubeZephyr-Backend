@@ -1,5 +1,6 @@
 from pydantic import EmailStr
-from fastapi.encoders import jsonable_encoder
+
+from datetime import datetime
 
 from app.db.mongodb import AsyncIOMotorClient
 from ..core.config import database_name, users_collection_name
@@ -21,16 +22,10 @@ async def get_user_by_email(conn: AsyncIOMotorClient, email: EmailStr) -> UserIn
 async def create_user(conn: AsyncIOMotorClient, user: UserInCreate) -> UserInDB:
     dbuser = UserInDB(**user.dict())
     dbuser.change_password(user.password)
+    
+    dbuser.created_at = dbuser.updated_at = datetime.utcnow().replace(microsecond=0)
 
-    row = await conn[database_name][users_collection_name].insert_one(UserInDB.mongo(dbuser))
-
-    dbuser.id = row.inserted_id
-    dbuser.updated_at = dbuser.id.generation_time
-    dbuser.created_at = dbuser.id.generation_time
-
-    await conn[database_name][users_collection_name].update_one(
-        {"_id": dbuser.id}, {"$set": UserInDB.mongo(dbuser)}
-    )
+    await conn[database_name][users_collection_name].insert_one(UserInDB.mongo(dbuser))
 
     return dbuser
 
@@ -44,9 +39,11 @@ async def update_user(conn: AsyncIOMotorClient, email: EmailStr, user: UserInUpd
     dbuser.image = user.image or dbuser.image
     if user.password:
         dbuser.change_password(user.password)
+    
+    dbuser.updated_at = datetime.utcnow().replace(microsecond=0)
 
-    updated_at = await conn[database_name][users_collection_name].update_one(
+    await conn[database_name][users_collection_name].update_one(
         {"_id": dbuser.id}, {'$set': UserInDB.mongo(dbuser)}
     )
-    dbuser.updated_at = updated_at
+
     return dbuser
