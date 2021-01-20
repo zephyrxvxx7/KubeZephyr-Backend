@@ -1,7 +1,7 @@
 from pydantic import EmailStr
 
 from app.db.mongodb import AsyncIOMotorClient
-from ..core.config import database_name, users_collection_name
+from app.crud.resource_limit import init_resource_limit
 from app.core.utils import get_utcnow
 from app.core.config import database_name, users_collection_name
 from ..models.user import UserInCreate, UserInDB, UserInUpdate
@@ -30,8 +30,16 @@ async def create_user(conn: AsyncIOMotorClient, user: UserInCreate) -> UserInDB:
     dbuser.created_at = dbuser.updated_at = get_utcnow()
 
     await conn[database_name][users_collection_name].insert_one(UserInDB.mongo(dbuser))
+    await init_user(conn, dbuser)
 
     return dbuser
+
+async def init_user(conn: AsyncIOMotorClient, dbuser: UserInDB):
+    dbuser = await get_user_by_email(conn, dbuser.email)
+
+    await init_resource_limit(conn, dbuser.id)
+
+    return True
 
 
 async def update_user(conn: AsyncIOMotorClient, email: EmailStr, user: UserInUpdate) -> UserInDB:

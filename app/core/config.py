@@ -5,6 +5,7 @@ from starlette.datastructures import CommaSeparatedStrings, Secret
 from databases import DatabaseURL
 
 API_V1_STR = "/api"
+API_ADMIN_STR = "/api/admin"
 
 JWT_TOKEN_PREFIX = "Token"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # one week
@@ -41,3 +42,4 @@ users_collection_name = "users"
 comments_collection_name = "commentaries"
 followers_collection_name = "followers"
 projects_collection_name = "projects"
+resources_limits_collection_name = "limits"
