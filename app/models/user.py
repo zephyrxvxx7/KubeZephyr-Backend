@@ -26,7 +26,7 @@ class UserInDB(DBModelMixin, UserBase):
         self.hashed_password = get_password_hash(self.salt + password)
 
 
-class User(UserBase):
+class User(DBModelMixin, UserBase):
     token: str
 
 
