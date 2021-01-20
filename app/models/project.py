@@ -23,7 +23,7 @@ class ProjectInUpdate(MongoModel):
     service: Optional[List[str]] = None
     volume: Optional[List[str]] = None
 class ProjectInResponse(MongoModel):
-    project: ProjectBase
+    project: ProjectInDB
 
 class ManyProjectInResponse(MongoModel):
-    project: List[ProjectBase]
+    project: List[ProjectInDB]
