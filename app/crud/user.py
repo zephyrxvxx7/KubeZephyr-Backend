@@ -4,9 +4,10 @@ from datetime import datetime
 
 from app.db.mongodb import AsyncIOMotorClient
 from app.crud.resource_limit import init_resource_limit
+from app.crud.resource_used import init_resource_used
 from app.core.utils import get_utcnow
 from app.core.config import database_name, users_collection_name
-from ..models.user import UserInCreate, UserInDB, UserInUpdate
+from app.models.user import UserInCreate, UserInDB, UserInUpdate
 
 
 async def get_user(conn: AsyncIOMotorClient, username: str) -> UserInDB:
@@ -40,6 +41,7 @@ async def init_user(conn: AsyncIOMotorClient, dbuser: UserInDB):
     dbuser = await get_user_by_email(conn, dbuser.email)
 
     await init_resource_limit(conn, dbuser.id)
+    await init_resource_used(conn, dbuser.id)
 
     return True
 
