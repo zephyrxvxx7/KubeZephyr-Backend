@@ -8,7 +8,7 @@ from app.models.resource_limit import (
 )
 from app.models.user import UserInDB
 from app.db.mongodb import AsyncIOMotorClient
-from app.core.config import database_name, resources_limits_collection_name
+from app.core.config import database_name, resources_limit_collection_name
 from app.core.utils import get_utcnow
 
 async def init_resource_limit(
@@ -35,14 +35,14 @@ async def crud_create_limit_by_id(
     if await crud_get_limit_by_id(conn, dblimit.user_id):
         return None
     
-    await conn[database_name][resources_limits_collection_name].insert_one(ResourceLimitInDB.mongo(dblimit))
+    await conn[database_name][resources_limit_collection_name].insert_one(ResourceLimitInDB.mongo(dblimit))
     
     return dblimit
 
 async def crud_get_limit_by_id(
     conn: AsyncIOMotorClient, user_id: OID
 ) -> ResourceLimitInDB:
-    limit_doc = await conn[database_name][resources_limits_collection_name].find_one({"user_id": user_id})
+    limit_doc = await conn[database_name][resources_limit_collection_name].find_one({"user_id": user_id})
     
     if limit_doc:
         return ResourceLimitInDB.from_mongo(limit_doc)
@@ -64,7 +64,7 @@ async def crud_update_limit_by_id(
 
     dblimit.updated_at = get_utcnow()
 
-    await conn[database_name][resources_limits_collection_name].update_one(
+    await conn[database_name][resources_limit_collection_name].update_one(
         {"user_id": user_id}, {'$set': ResourceLimitInDB.mongo(dblimit)}
     )
 

@@ -20,15 +20,14 @@ from app.crud.resource_limit import (
     crud_create_limit_by_id,
     crud_get_limit_by_id,
     crud_update_limit_by_id
-) 
-from app.models.user import UserInDB
+)
 from app.models.rwmodel import OID
 
 router = APIRouter()
 
-@router.post("/resources/limits",
+@router.post("/resources/limit",
     response_model=ResourceLimitInResponse,
-    tags=["resources_limits"],
+    tags=["ADMIN Resources Limit"],
     status_code=HTTP_201_CREATED
 )
 async def create_resource_limit(
@@ -47,9 +46,9 @@ async def create_resource_limit(
 
     return ResourceLimitInResponse(resource_limit=ResourceLimitBase(**dblimit.dict()))
 
-@router.get("/resources/limits/{user_id}",
+@router.get("/resources/limit/{user_id}",
     response_model=ResourceLimitInResponse,
-    tags=["resources_limits"]
+    tags=["ADMIN Resources Limit"]
 )
 async def get_resource_limit_by_user_id(
         user_id: OID = Path(...),
@@ -65,9 +64,9 @@ async def get_resource_limit_by_user_id(
 
     return ResourceLimitInResponse(resource_limit=ResourceLimitBase(**dblimit.dict()))
 
-@router.patch("/resources/limits/{user_id}",
+@router.patch("/resources/limit/{user_id}",
     response_model=ResourceLimitInResponse,
-    tags=["resources_limits"]
+    tags=["ADMIN Resources Limit"]
 )
 async def update_resource_limit_by_user_id(
         user_id: OID = Path(...),

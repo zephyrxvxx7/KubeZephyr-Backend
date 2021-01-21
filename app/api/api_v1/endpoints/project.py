@@ -23,8 +23,7 @@ from app.db.mongodb import (
 from app.models.rwmodel import OID
 from app.models.user import User
 from app.models.project import (
-    ProjectBase,
-    ProjectInCreate, ProjectInDB,
+    ProjectInCreate,
     ProjectInResponse,
     ManyProjectInResponse,
     ProjectInUpdate

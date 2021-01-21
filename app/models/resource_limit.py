@@ -1,9 +1,7 @@
-from typing import Optional, List
+from typing import Optional
 
 from app.models.dbmodel import DBModelMixin
 from app.models.rwmodel import MongoModel, OID
-from app.models.pod import Pod
-from app.models.service import Service
 
 class ResourceLimitBase(MongoModel):
     volume_storage_limit: float
