@@ -60,10 +60,8 @@ async def crud_update_project_by_id(
     if not dbproject:
         return None
 
-    dbproject.name = project.name or dbproject.name
-    dbproject.pod = project.pod or dbproject.pod
-    dbproject.service = project.service or dbproject.service
-    dbproject.volume = project.volume or dbproject.volume
+    update_data = project.dict(exclude_unset=True)
+    dbproject = dbproject.copy(update=update_data)
 
     dbproject.updated_at = get_utcnow()
 

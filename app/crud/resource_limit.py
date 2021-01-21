@@ -57,10 +57,8 @@ async def crud_update_limit_by_id(
     if not dblimit:
         return None
 
-    dblimit.volume_storage_limit = limit.volume_storage_limit or dblimit.volume_storage_limit
-    dblimit.pod_limit = limit.pod_limit or dblimit.pod_limit
-    dblimit.cpu_limit = limit.cpu_limit or dblimit.cpu_limit
-    dblimit.memory_limit = limit.memory_limit or dblimit.memory_limit
+    update_data = limit.dict(exclude_unset=True)
+    dblimit = dblimit.copy(update=update_data)
 
     dblimit.updated_at = get_utcnow()
 
