@@ -10,6 +10,8 @@ API_ADMIN_STR = "/api/admin"
 JWT_TOKEN_PREFIX = "Token"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # one week
 
+KUBERNETES_KIND = ["Pod", "Service", "PersistentVolumeClaim", "Ingress"]
+
 load_dotenv(".env")
 
 MAX_CONNECTIONS_COUNT = int(os.getenv("MAX_CONNECTIONS_COUNT", 10))
@@ -34,6 +36,9 @@ if not MONGODB_URL:
 else:
     MONGODB_URL = DatabaseURL(MONGODB_URL)
 
+K8S_CEPH_NAMESPACE = os.getenv("K8S_CEPH_NAMESPACE", "rook-ceph")
+K8S_CEPHBLOCKPOOL_NAME = os.getenv("K8S_CEPHBLOCKPOOL_NAME", "kubezephyr-blockpool")
+
 database_name = MONGO_DB
 article_collection_name = "articles"
 favorites_collection_name = "favorites"
@@ -42,5 +47,6 @@ users_collection_name = "users"
 comments_collection_name = "commentaries"
 followers_collection_name = "followers"
 projects_collection_name = "projects"
+resources_collection_name = "resources"
 resources_limit_collection_name = "limit"
 resources_used_collection_name = "used"

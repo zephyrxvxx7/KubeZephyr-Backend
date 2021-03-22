@@ -20,11 +20,15 @@ from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
-from .api.api_v1.api import router as api_router_v1
+from kubernetes import config
+
+from .api.api_user.api import router as api_router_user
 from .api.api_admin.api import router as api_router_admin
 from .core.config import ALLOWED_HOSTS, API_V1_STR, API_ADMIN_STR, PROJECT_NAME
 from .core.errors import http_422_error_handler, http_error_handler
 from .db.mongodb_utils import close_mongo_connection, connect_to_mongo
+
+config.load_kube_config()
 
 app = FastAPI(title=PROJECT_NAME)
 
@@ -45,5 +49,5 @@ app.add_event_handler("shutdown", close_mongo_connection)
 app.add_exception_handler(HTTPException, http_error_handler)
 app.add_exception_handler(HTTP_422_UNPROCESSABLE_ENTITY, http_422_error_handler)
 
-app.include_router(api_router_v1, prefix=API_V1_STR)
+app.include_router(api_router_user, prefix=API_V1_STR)
 app.include_router(api_router_admin, prefix=API_ADMIN_STR)

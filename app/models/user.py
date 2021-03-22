@@ -17,6 +17,7 @@ class UserBase(MongoModel):
 class UserInDB(DBModelMixin, UserBase):
     salt: str = ""
     hashed_password: str = ""
+    permission: str = "user"
 
     def check_password(self, password: str):
         return verify_password(self.salt + password, self.hashed_password)
@@ -25,6 +26,8 @@ class UserInDB(DBModelMixin, UserBase):
         self.salt = generate_salt()
         self.hashed_password = get_password_hash(self.salt + password)
 
+    def change_permission(self, permission: str):
+        self.permission = permission
 
 class User(DBModelMixin, UserBase):
     token: str

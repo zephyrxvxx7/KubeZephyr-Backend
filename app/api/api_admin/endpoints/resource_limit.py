@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Body, Depends, Path, HTTPException
+from kubernetes.client.api.core_v1_api import CoreV1Api
 
 from starlette.status import (
     HTTP_201_CREATED,
@@ -8,77 +9,38 @@ from starlette.status import (
     HTTP_422_UNPROCESSABLE_ENTITY,
 )
 
-from app.core.jwt import get_current_user_authorizer
-from app.db.mongodb import AsyncIOMotorClient, get_database
-from app.models.resource_limit import (
-    ResourceLimitBase,
-    ResourceLimitInCreate,
-    ResourceLimitInResponse,
-    ResourceLimitInUpdate
-)
-from app.crud.resource_limit import (
-    crud_create_limit_by_id,
-    crud_get_limit_by_id,
-    crud_update_limit_by_id
+from app.models.resource_quota import (
+    ResourceQuotaInUpdate, 
+    ResourceQuotaInResponse
 )
 from app.models.rwmodel import OID
+import app.kubernetes.resource_quota as k8s_resource_quota
+from app.kubernetes import get_k8s_core_v1_api
 
 router = APIRouter()
 
-@router.post("/resources/limit",
-    response_model=ResourceLimitInResponse,
-    tags=["ADMIN Resources Limit"],
-    status_code=HTTP_201_CREATED
-)
-async def create_resource_limit(
-        resource_limit: ResourceLimitInCreate = Body(..., embed=False),
-        db: AsyncIOMotorClient = Depends(get_database),
-):
-    async with await db.start_session() as s:
-        async with s.start_transaction():
-            dblimit = await crud_create_limit_by_id(db, resource_limit)
-    
-    if not dblimit:
-        return HTTPException(
-            status_code=HTTP_400_BAD_REQUEST,
-            detail=f"User with resource limit already created"
-        )
-
-    return ResourceLimitInResponse(resource_limit=ResourceLimitBase(**dblimit.dict()))
-
 @router.get("/resources/limit/{user_id}",
-    response_model=ResourceLimitInResponse,
+    response_model=ResourceQuotaInResponse,
     tags=["ADMIN Resources Limit"]
 )
 async def get_resource_limit_by_user_id(
-        user_id: OID = Path(...),
-        db: AsyncIOMotorClient = Depends(get_database),
+    user_id: OID = Path(...),
+    core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
 ):
-    dblimit = await crud_get_limit_by_id(db, user_id)
+    quota = k8s_resource_quota.get_resource_quota(core_v1_api=core_v1_api, name=str(user_id))
 
-    if not dblimit:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
-            detail=f"Resource limit with user id '{user_id}' not found"
-        )
-
-    return ResourceLimitInResponse(resource_limit=ResourceLimitBase(**dblimit.dict()))
+    return ResourceQuotaInResponse(resource_quota=k8s_resource_quota.convert_to_ResourceQuotaBase(quota))
 
 @router.patch("/resources/limit/{user_id}",
-    response_model=ResourceLimitInResponse,
+    response_model=ResourceQuotaInResponse,
     tags=["ADMIN Resources Limit"]
 )
 async def update_resource_limit_by_user_id(
         user_id: OID = Path(...),
-        resource_limit: ResourceLimitInUpdate = Body(..., embed=False),
-        db: AsyncIOMotorClient = Depends(get_database),
+        quota: ResourceQuotaInUpdate = Body(..., embed=False),
+        core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
 ):
-    dblimit = await crud_update_limit_by_id(db, user_id, resource_limit)
+    hard_dict = k8s_resource_quota.convert_to_dict(quota)
+    quota = k8s_resource_quota.update_resource_quota(core_v1_api=core_v1_api, name=str(user_id), hard_dict=hard_dict)
 
-    if not dblimit:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
-            detail=f"Resource limit with user id '{user_id}' not found"
-        )
-
-    return ResourceLimitInResponse(resource_limit=ResourceLimitBase(**dblimit.dict()))
+    return ResourceQuotaInResponse(resource_quota=k8s_resource_quota.convert_to_ResourceQuotaBase(quota))

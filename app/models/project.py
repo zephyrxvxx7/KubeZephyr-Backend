@@ -15,7 +15,7 @@ class ProjectInDB(DBModelMixin, ProjectBase):
     owner_id: OID
 
 class ProjectInCreate(ProjectBase):
-    owner_id: Optional[OID] = None
+    pass
 
 class ProjectInUpdate(MongoModel):
     name: Optional[str] = None

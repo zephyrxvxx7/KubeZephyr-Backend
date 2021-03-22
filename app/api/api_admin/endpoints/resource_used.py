@@ -15,10 +15,6 @@ from app.models.resource_used import (
     ResourceUsedInUpdate,
     ResourceUsedInResponse
 )
-from app.crud.resource_used import (
-    crud_get_used_by_id,
-    crud_update_used_by_id
-) 
 from app.models.rwmodel import OID
 
 router = APIRouter()
@@ -31,7 +27,8 @@ async def get_resource_used_by_user_id(
         user_id: OID = Path(...),
         db: AsyncIOMotorClient = Depends(get_database),
 ):
-    dbused = await crud_get_used_by_id(db, user_id)
+    # dbused = await crud_get_used_by_id(db, user_id)
+    dbused = None
 
     if not dbused:
         raise HTTPException(
@@ -50,7 +47,8 @@ async def update_resource_used_by_user_id(
         resource_used: ResourceUsedInUpdate = Body(..., embed=False),
         db: AsyncIOMotorClient = Depends(get_database),
 ):
-    dbused = await crud_update_used_by_id(db, user_id, resource_used)
+    # dbused = await crud_update_used_by_id(db, user_id, resource_used)
+    dbused = None
 
     if not dbused:
         raise HTTPException(

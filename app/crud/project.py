@@ -8,15 +8,15 @@ from app.models.project import (
     ProjectInCreate, 
     ProjectInUpdate
 )
-from app.models.user import UserInDB
+from app.models.user import UserInDB, User
 from app.db.mongodb import AsyncIOMotorClient
 from app.core.utils import get_utcnow
 from app.core.config import database_name, projects_collection_name
 
 async def crud_create_project(
-    conn: AsyncIOMotorClient, project: ProjectInCreate
+    conn: AsyncIOMotorClient, project: ProjectInCreate, user: User
 ) -> ProjectInDB:
-    dbproject = ProjectInDB(**project.dict())
+    dbproject = ProjectInDB(**project.dict(), owner_id=user.id)
 
     dbproject.created_at = dbproject.updated_at = get_utcnow()
     
