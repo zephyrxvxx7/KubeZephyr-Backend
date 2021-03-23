@@ -19,11 +19,11 @@ from app.kubernetes import get_k8s_core_v1_api
 
 router = APIRouter()
 
-@router.get("/resources/limit/{user_id}",
+@router.get("/resources/quota/{user_id}",
     response_model=ResourceQuotaInResponse,
-    tags=["ADMIN Resources Limit"]
+    tags=["ADMIN Resources Quota"]
 )
-async def get_resource_limit_by_user_id(
+async def get_resource_quota_by_user_id(
     user_id: OID = Path(...),
     core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
 ):
@@ -31,11 +31,11 @@ async def get_resource_limit_by_user_id(
 
     return ResourceQuotaInResponse(resource_quota=k8s_resource_quota.convert_to_ResourceQuotaBase(quota))
 
-@router.patch("/resources/limit/{user_id}",
+@router.patch("/resources/quota/{user_id}",
     response_model=ResourceQuotaInResponse,
-    tags=["ADMIN Resources Limit"]
+    tags=["ADMIN Resources Quota"]
 )
-async def update_resource_limit_by_user_id(
+async def update_resource_quota_by_user_id(
         user_id: OID = Path(...),
         quota: ResourceQuotaInUpdate = Body(..., embed=False),
         core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Body, Depends, Path, HTTPException
+from kubernetes.client.api.core_v1_api import CoreV1Api
 
 from starlette.status import (
     HTTP_201_CREATED,
@@ -9,13 +10,10 @@ from starlette.status import (
 )
 
 from app.core.jwt import get_current_user_authorizer
-from app.db.mongodb import AsyncIOMotorClient, get_database
-from app.models.resource_used import (
-    ResourceUsedBase,
-    ResourceUsedInUpdate,
-    ResourceUsedInResponse
-)
+from app.models.resource_quota import ResourceUsedInResponse
 from app.models.rwmodel import OID
+import app.kubernetes.resource_quota as k8s_resource_quota
+from app.kubernetes import get_k8s_core_v1_api
 
 router = APIRouter()
 
@@ -24,36 +22,10 @@ router = APIRouter()
     tags=["ADMIN Resources Used"]
 )
 async def get_resource_used_by_user_id(
-        user_id: OID = Path(...),
-        db: AsyncIOMotorClient = Depends(get_database),
+    user_id: OID = Path(...),
+    core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
 ):
-    # dbused = await crud_get_used_by_id(db, user_id)
-    dbused = None
+    used = k8s_resource_quota.get_resource_used(core_v1_api=core_v1_api, name=str(user_id))
 
-    if not dbused:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
-            detail=f"Resource used with user id '{user_id}' not found"
-        )
+    return ResourceUsedInResponse(resource_used=k8s_resource_quota.convert_to_ResourceQuotaBase(used))
 
-    return ResourceUsedInResponse(resource_used=ResourceUsedBase(**dbused.dict()))
-
-@router.patch("/resources/used/{user_id}",
-    response_model=ResourceUsedInResponse,
-    tags=["ADMIN Resources Used"]
-)
-async def update_resource_used_by_user_id(
-        user_id: OID = Path(...),
-        resource_used: ResourceUsedInUpdate = Body(..., embed=False),
-        db: AsyncIOMotorClient = Depends(get_database),
-):
-    # dbused = await crud_update_used_by_id(db, user_id, resource_used)
-    dbused = None
-
-    if not dbused:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
-            detail=f"Resource used with user id '{user_id}' not found"
-        )
-
-    return ResourceUsedInResponse(resource_used=ResourceUsedBase(**dbused.dict()))

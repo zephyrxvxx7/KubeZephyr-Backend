@@ -26,7 +26,5 @@ def get_resource_used(
     core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
 ):
     used = k8s_resource_quota.get_resource_used(core_v1_api=core_v1_api, name=str(user.id))
-    
-    resource_used = k8s_resource_quota.convert_to_ResourceQuotaBase(used)
 
-    return ResourceUsedInResponse(resource_used=resource_used)
+    return ResourceUsedInResponse(resource_used=k8s_resource_quota.convert_to_ResourceQuotaBase(used))

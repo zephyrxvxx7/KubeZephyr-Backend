@@ -17,16 +17,14 @@ from app.models.user import User
 
 router = APIRouter()
 
-@router.get("/resources/limit",
+@router.get("/resources/quota",
     response_model=ResourceQuotaInResponse,
     tags=["Resources"]
 )
-def get_resource_limit(
+def get_resource_quota(
     user: User = Depends(get_current_user_authorizer()),
     core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
 ):
     quota = k8s_resource_quota.get_resource_quota(core_v1_api=core_v1_api, name=str(user.id))
 
-    resource_quota = k8s_resource_quota.convert_to_ResourceQuotaBase(quota)
-
-    return ResourceQuotaInResponse(resource_quota=resource_quota)
+    return ResourceQuotaInResponse(resource_quota=k8s_resource_quota.convert_to_ResourceQuotaBase(quota))
