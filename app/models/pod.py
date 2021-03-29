@@ -1,33 +1,25 @@
-from os import name
 from typing import Optional, List
-from pydantic import BaseModel
-from pydantic.types import Json
+from pydantic import BaseModel, Field
 
 from app.models.dbmodel import DBModelMixin
 from app.models.rwmodel import MongoModel
+from app.models.k8s_resource.io.k8s.api.core.v1 import PodSpec
+from app.models.k8s_resource.io.k8s.apimachinery.pkg.apis.meta.v1 import ObjectMeta
+class PodInCreate(BaseModel):
+    metadata: ObjectMeta = Field(
+        ...,
+        description="Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata",
+    )
+    spec: PodSpec = Field(
+        ...,
+        description='Specification of the desired behavior of the pod. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status',
+    )
 
-class Resource(BaseModel):
-    memory: str
-    cpu:  str
+class PodInUpdate(BaseModel):
+    spec: Optional[PodSpec] = Field(
+        None,
+        description='Specification of the desired behavior of the pod. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status',
+    )
 
-class PodVolume(BaseModel):
-    name: str
-    claimName: str
-
-class VolumeMount(BaseModel):
-    name: str
-    mountPath: str
-
-class Container(BaseModel):
-    name: str
-    image: str
-    containerPort: int
-    volumeMounts: Optional[List[VolumeMount]] = None
-    resource: Optional[Resource] = None
-
-class Pod(DBModelMixin, MongoModel):
-    name: str
-    containers: Container
-    # volumes: Optional[List[PodVolume]] = None
-    
-    
+class PodInResponse(BaseModel):
+    pod: PodInCreate
