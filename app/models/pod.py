@@ -23,3 +23,6 @@ class PodInUpdate(BaseModel):
 
 class PodInResponse(BaseModel):
     pod: PodInCreate
+
+class ManyProjectInResponse(BaseModel):
+    pod: List[str]
