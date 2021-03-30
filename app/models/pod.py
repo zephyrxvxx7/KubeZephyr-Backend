@@ -24,5 +24,5 @@ class PodInUpdate(BaseModel):
 class PodInResponse(BaseModel):
     pod: PodInCreate
 
-class ManyProjectInResponse(BaseModel):
+class ManyPodInResponse(BaseModel):
     pod: List[str]

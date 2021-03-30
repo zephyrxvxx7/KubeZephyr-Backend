@@ -1,7 +1,5 @@
-from app.models.k8s_resource.io.k8s.api.core.v1 import Namespace
 from fastapi import HTTPException
 
-from kubernetes import client
 from kubernetes.client.api.core_v1_api import CoreV1Api
 from kubernetes.client.api_client import ApiClient
 from kubernetes.client.rest import ApiException
