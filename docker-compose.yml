@@ -1,18 +1,12 @@
 version: '3'
 
 services:
-  # db:
-  #   image: mongodb
-  #   env_file:
-  #     - .env
   web_app:
     build:
       dockerfile: Dockerfile
       context: .
-    image: kubezephyr_backend_image
+    image: zephyrxvxx7/kubezephyr_backend
     env_file:
       - .env
-    # depends_on:
-    #   - db
     ports:
       - "8000:8000"

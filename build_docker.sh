@@ -1,1 +1,1 @@
-docker build -t kubezephyr_backend_image ./
+docker build -t zephyrxvxx7/kubezephyr_backend ./

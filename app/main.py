@@ -28,7 +28,10 @@ from .core.config import ALLOWED_HOSTS, API_V1_STR, API_ADMIN_STR, PROJECT_NAME
 from .core.errors import http_422_error_handler, http_error_handler
 from .db.mongodb_utils import close_mongo_connection, connect_to_mongo
 
-config.load_kube_config()
+try:
+    config.load_kube_config()
+finally:
+    config.load_incluster_config()
 
 app = FastAPI(title=PROJECT_NAME)
 
