@@ -20,10 +20,12 @@ async def update_current_user(
     current_user: User = Depends(get_current_user_authorizer()),
     db: AsyncIOMotorClient = Depends(get_database),
 ):
-    if user.username == current_user.username:
-        user.username = None
     if user.email == current_user.email:
         user.email = None
+    if user.realName == current_user.realName:
+        user.realName = None
+    if user.desc == current_user.desc:
+        user.desc = None
 
     await check_free_email(db, user.email)
 

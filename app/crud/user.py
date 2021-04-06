@@ -2,8 +2,6 @@ from kubernetes.client.api.core_v1_api import CoreV1Api
 from kubernetes.client.api.storage_v1_api import StorageV1Api
 from pydantic import EmailStr
 
-from datetime import datetime
-
 from app.db.mongodb import AsyncIOMotorClient
 from app.core.utils import get_utcnow
 from app.core.config import database_name, users_collection_name
@@ -58,10 +56,9 @@ async def init_user(conn: AsyncIOMotorClient, dbuser: UserInDB, core_v1_api: Cor
 async def update_user(conn: AsyncIOMotorClient, email: EmailStr, user: UserInUpdate) -> UserInDB:
     dbuser = await get_user_by_email(conn, email)
 
-    dbuser.username = user.username or dbuser.username
     dbuser.email = user.email or dbuser.email
-    dbuser.bio = user.bio or dbuser.bio
-    dbuser.image = user.image or dbuser.image
+    dbuser.realName = user.realName or dbuser.realName
+    dbuser.desc = user.desc or dbuser.desc
     if user.password:
         dbuser.change_password(user.password)
     
