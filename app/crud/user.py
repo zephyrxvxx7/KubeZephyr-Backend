@@ -33,24 +33,26 @@ async def create_user(conn: AsyncIOMotorClient, user: UserInCreate, core_v1_api:
     dbuser.created_at = dbuser.updated_at = get_utcnow()
 
     await conn[database_name][users_collection_name].insert_one(UserInDB.mongo(dbuser))
-    await init_user(conn, dbuser, core_v1_api, storage_v1_api)
+    dbuser = await init_user(conn, dbuser, core_v1_api, storage_v1_api)
 
     return dbuser
+
 
 async def init_user(conn: AsyncIOMotorClient, dbuser: UserInDB, core_v1_api: CoreV1Api, storage_v1_api: StorageV1Api):
     dbuser = await get_user_by_email(conn, dbuser.email)
 
-    create_namespace(core_v1_api, name=str(dbuser.id))
-    create_resource_quota(core_v1_api, name=str(dbuser.id), hard_dict={
-        "limits.cpu": "1",
-        "limits.memory": "128Mi",
-        "pods": "4",
-        "persistentvolumeclaims": "4",
-        "requests.storage": "5Gi"
-    })
-    create_storage_class(storage_v1_api, str(dbuser.id))
+    if(next((True for role in dbuser.roles if role.value == "user"), False)):
+        create_namespace(core_v1_api, name=str(dbuser.id))
+        create_resource_quota(core_v1_api, name=str(dbuser.id), hard_dict={
+            "limits.cpu": "1",
+            "limits.memory": "128Mi",
+            "pods": "4",
+            "persistentvolumeclaims": "4",
+            "requests.storage": "5Gi"
+        })
+        create_storage_class(storage_v1_api, str(dbuser.id))
 
-    return True
+    return dbuser
 
 
 async def update_user(conn: AsyncIOMotorClient, email: EmailStr, user: UserInUpdate) -> UserInDB:

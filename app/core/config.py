@@ -36,6 +36,7 @@ if not MONGODB_URL:
 else:
     MONGODB_URL = DatabaseURL(MONGODB_URL)
 
+K8S_CLIENT_IN_CLUSTER = os.getenv("K8S_CLIENT_IN_CLUSTER", False)
 K8S_CEPH_NAMESPACE = os.getenv("K8S_CEPH_NAMESPACE", "rook-ceph")
 K8S_CEPHBLOCKPOOL_NAME = os.getenv("K8S_CEPHBLOCKPOOL_NAME", "kubezephyr-blockpool")
 
