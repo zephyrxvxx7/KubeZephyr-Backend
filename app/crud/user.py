@@ -1,11 +1,13 @@
 from kubernetes.client.api.core_v1_api import CoreV1Api
 from kubernetes.client.api.storage_v1_api import StorageV1Api
 from pydantic import EmailStr
+from typing import List
 
 from app.db.mongodb import AsyncIOMotorClient
 from app.core.utils import get_utcnow
 from app.core.config import database_name, users_collection_name
 from app.models.user import UserInCreate, UserInDB, UserInUpdate
+from app.models.rwmodel import OID
 from app.kubernetes.namespace import create_namespace
 from app.kubernetes.resource_quota import create_resource_quota
 from app.kubernetes.storage_class import create_storage_class
@@ -24,6 +26,25 @@ async def get_user_by_email(conn: AsyncIOMotorClient, email: EmailStr) -> UserIn
         return UserInDB.from_mongo(row)
     else:
         return None
+
+async def get_user_by_user_id(conn: AsyncIOMotorClient, id: OID) -> UserInDB:
+    row = await conn[database_name][users_collection_name].find_one({"_id": id})
+    if row:
+        return UserInDB.from_mongo(row)
+    else:
+        return None
+
+async def crud_get_many_user(conn: AsyncIOMotorClient) -> List[UserInDB]:
+    user_doc = conn[database_name][users_collection_name].find()
+    
+    if not user_doc:
+        return None
+    
+    result = list()
+    async for user in user_doc:
+        result.append(UserInDB.from_mongo(user))
+    
+    return result
 
 
 async def create_user(conn: AsyncIOMotorClient, user: UserInCreate, core_v1_api: CoreV1Api, storage_v1_api: StorageV1Api) -> UserInDB:
@@ -71,3 +92,15 @@ async def update_user(conn: AsyncIOMotorClient, email: EmailStr, user: UserInUpd
     )
 
     return dbuser
+
+async def delete_user(conn: AsyncIOMotorClient, id: OID):
+    dbuser = await get_user_by_user_id(conn, id)
+    
+    if not dbuser:
+        return False
+    
+    await conn[database_name][users_collection_name].delete_one(
+        {"_id": dbuser.id}
+    )
+
+    return True

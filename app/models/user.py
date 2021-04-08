@@ -39,6 +39,12 @@ class User(UserBase):
 class UserInResponse(MongoModel):
     user: User
 
+class ManyUser(UserBase):
+    id: OID
+
+class ManyUserInResponse(MongoModel):
+    user: List[ManyUser]
+
 
 class UserInLogin(MongoModel):
     email: EmailStr
