@@ -18,7 +18,7 @@ MAX_CONNECTIONS_COUNT = int(os.getenv("MAX_CONNECTIONS_COUNT", 10))
 MIN_CONNECTIONS_COUNT = int(os.getenv("MIN_CONNECTIONS_COUNT", 10))
 SECRET_KEY = Secret(os.getenv("SECRET_KEY", "secret key for project"))
 
-PROJECT_NAME = os.getenv("PROJECT_NAME", "FastAPI example application")
+PROJECT_NAME = os.getenv("PROJECT_NAME", "KubeZephyr")
 ALLOWED_HOSTS = CommaSeparatedStrings(os.getenv("ALLOWED_HOSTS", ""))
 
 MONGODB_URL = os.getenv("MONGODB_URL", "")  # deploying without docker-compose
@@ -36,7 +36,7 @@ if not MONGODB_URL:
 else:
     MONGODB_URL = DatabaseURL(MONGODB_URL)
 
-K8S_CLIENT_IN_CLUSTER = os.getenv("K8S_CLIENT_IN_CLUSTER", False)
+K8S_CLIENT_IN_CLUSTER = bool(os.getenv("K8S_CLIENT_IN_CLUSTER", False))
 K8S_CEPH_NAMESPACE = os.getenv("K8S_CEPH_NAMESPACE", "rook-ceph")
 K8S_CEPHBLOCKPOOL_NAME = os.getenv("K8S_CEPHBLOCKPOOL_NAME", "kubezephyr-blockpool")
 

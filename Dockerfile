@@ -5,8 +5,8 @@ RUN pip3 install -r requirements.txt
 
 COPY . /
 
-EXPOSE 8000
+EXPOSE 1234
 
 # CMD alembic upgrade head && \
-CMD gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0
+CMD gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:1234
 
