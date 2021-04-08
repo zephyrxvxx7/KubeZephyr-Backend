@@ -38,7 +38,7 @@ async def crud_get_project_by_id(
 
 async def crud_get_many_project(
     conn: AsyncIOMotorClient, user: UserInDB
-) -> ProjectInDB:
+) -> List[ProjectInDB]:
     project_doc = conn[database_name][projects_collection_name].find({"owner_id": user.id})
     
     if not project_doc:
