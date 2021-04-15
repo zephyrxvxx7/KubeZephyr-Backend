@@ -31,7 +31,7 @@ async def get_resource_quota_by_user_id(
 
     return ResourceQuotaInResponse(resource_quota=k8s_resource_quota.convert_to_ResourceQuotaBase(quota))
 
-@router.patch("/resources/quota/{user_id}",
+@router.put("/resources/quota/{user_id}",
     response_model=ResourceQuotaInResponse,
     tags=["ADMIN Resources Quota"]
 )

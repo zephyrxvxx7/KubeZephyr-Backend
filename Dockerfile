@@ -7,6 +7,5 @@ COPY . /
 
 EXPOSE 1234
 
-# CMD alembic upgrade head && \
 CMD gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:1234
 

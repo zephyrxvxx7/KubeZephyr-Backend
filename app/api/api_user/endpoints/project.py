@@ -87,7 +87,7 @@ async def get_project_by_id(
     
     return ProjectInResponse(project=dbproject)
 
-@router.patch(
+@router.put(
     "/projects/{id}",
     response_model=ProjectInResponse,
     tags=["projects"]

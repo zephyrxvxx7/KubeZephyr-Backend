@@ -14,7 +14,7 @@ async def retrieve_current_user(user: User = Depends(get_current_user_authorizer
     return UserInResponse(user=user)
 
 
-@router.patch("/user", response_model=UserInResponse, tags=["users"])
+@router.put("/user", response_model=UserInResponse, tags=["users"])
 async def update_current_user(
     user: UserInUpdate = Body(..., embed=False),
     current_user: User = Depends(get_current_user_authorizer()),

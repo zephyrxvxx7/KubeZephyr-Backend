@@ -69,7 +69,7 @@ async def get_pods_name(
 
     return ManyPodInResponse(pod=[item.metadata.name for item in body.items])
 
-@router.patch("/resources/pod/{name}",
+@router.put("/resources/pod/{name}",
     response_model=PodInResponse,
     response_model_exclude_none=True,
     tags=["Resources"]

@@ -69,7 +69,7 @@ async def get_pvcs_name(
 
     return ManyPvcInResponse(pvc=[item.metadata.name for item in body.items])
 
-@router.patch("/resources/pvc/{name}",
+@router.put("/resources/pvc/{name}",
     response_model=PvcInResponse,
     response_model_exclude_none=True,
     tags=["Resources"]
