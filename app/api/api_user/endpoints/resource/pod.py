@@ -1,5 +1,8 @@
+from typing import Dict
 from fastapi import APIRouter, Body, Depends, Path
+from fastapi.responses import Response
 from kubernetes.client.api.core_v1_api import CoreV1Api
+
 
 from starlette.status import (
     HTTP_201_CREATED,
@@ -34,6 +37,10 @@ async def create_pod(
 ):
     namespace = str(user.id)
     pod.metadata.namespace = namespace
+    if type(pod.metadata.labels) == dict:
+        pod.metadata.labels.update({"app": pod.metadata.name})
+    else:
+        pod.metadata.labels = {"app": pod.metadata.name}
 
     body = k8s_pod.create_pod(core_v1_api=core_v1_api, v1_api=v1_api, namespace=namespace, pod=pod)
 
@@ -55,6 +62,22 @@ async def get_pod_by_name(
     body = k8s_pod.get_pod(core_v1_api=core_v1_api, name=name, namespace=namespace)
 
     return PodInResponse(pod=PodInCreate(**v1_api.sanitize_for_serialization(body)))
+
+@router.get("/resources/pod/{name}/log",
+    response_model=str,
+    tags=["Resources"]
+)
+async def get_pod_log_by_name(
+    name: str = Path(...),
+    user: User = Depends(get_current_user_authorizer()),
+    core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
+):
+    namespace = str(user.id)
+
+    body = k8s_pod.get_log(core_v1_api=core_v1_api, name=name, namespace=namespace)
+
+    return body
+
 
 @router.get("/resources/pod",
     response_model=ManyPodInResponse,
@@ -102,4 +125,4 @@ async def delete_pod(
 
     k8s_pod.delete_pod(core_v1_api=core_v1_api, name=name, namespace=namespace)
 
-    return None
+    return Response(status_code=HTTP_204_NO_CONTENT)

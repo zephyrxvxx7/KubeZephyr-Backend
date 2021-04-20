@@ -1,6 +1,5 @@
-
-from app.core.permission import check_permission
 from fastapi import APIRouter, Depends, Path, HTTPException
+from fastapi.responses import Response
 from kubernetes.client.api.core_v1_api import CoreV1Api
 
 from starlette.status import (
@@ -12,6 +11,7 @@ from starlette.status import (
 )
 
 from app.core.jwt import get_current_user_authorizer
+from app.core.permission import check_permission
 from app.crud.user import crud_get_many_user, delete_user, get_user_by_user_id
 from app.db.mongodb import AsyncIOMotorClient, get_database
 from app.models.user import ManyUserInResponse, ManyUser, User
@@ -65,4 +65,4 @@ async def delete_user_by_user_id(
     await delete_user(db, user_id)
     delete_namespace(core_v1_api, str(user_id))
 
-    return None
+    return Response(status_code=HTTP_204_NO_CONTENT)

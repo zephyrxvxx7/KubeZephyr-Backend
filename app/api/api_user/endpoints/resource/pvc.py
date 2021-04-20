@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Body, Depends, Path
+from fastapi.responses import Response
 from kubernetes.client.api.core_v1_api import CoreV1Api
 
 from starlette.status import (
@@ -102,4 +103,4 @@ async def delete_pvc(
 
     k8s_pvc.delete_pvc(core_v1_api=core_v1_api, name=name, namespace=namespace)
 
-    return None
+    return Response(status_code=HTTP_204_NO_CONTENT)

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Body, Depends, Path, HTTPException
+from fastapi.responses import Response
 
 from starlette.status import (
     HTTP_201_CREATED,
@@ -126,4 +127,4 @@ async def delete_project_by_id(
             detail=f"Project with id '{id}' not found"
         )
 
-    return None
+    return Response(status_code=HTTP_204_NO_CONTENT)

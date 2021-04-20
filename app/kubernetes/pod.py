@@ -31,6 +31,15 @@ def get_pod(core_v1_api: CoreV1Api, name: str, namespace: str) -> V1Pod:
             status_code=e.status,
             detail=eval(e.body)['message']
         )
+
+def get_log(core_v1_api: CoreV1Api, name: str, namespace: str) -> str:
+    try:
+        return core_v1_api.read_namespaced_pod_log(name=name, namespace=namespace)
+    except ApiException as e:
+        raise HTTPException(
+            status_code=e.status,
+            detail=eval(e.body)['message']
+        )
     
 def get_pods(core_v1_api: CoreV1Api, namespace: str) -> V1PodList:
     try:
