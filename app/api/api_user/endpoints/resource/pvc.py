@@ -2,7 +2,8 @@ from fastapi import APIRouter, Body, Depends, Path
 from kubernetes.client.api.core_v1_api import CoreV1Api
 
 from starlette.status import (
-    HTTP_201_CREATED
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT
 )
 from kubernetes.client.api_client import ApiClient
 
@@ -87,8 +88,10 @@ async def update_pvc(
 
     return PvcInResponse(pvc=PvcInCreate(**v1_api.sanitize_for_serialization(body)))
 
-@router.delete("/resources/pvc/{name}",
-    tags=["Resources"]
+@router.delete(
+    "/resources/pvc/{name}",
+    tags=["Resources"],
+    status_code=HTTP_204_NO_CONTENT
 )
 async def delete_pvc(
     name: str = Path(...),

@@ -43,7 +43,11 @@ async def get_users(
 
     return ManyUserInResponse(user=[ManyUser(**user.dict()) for user in dbuser])
 
-@router.delete("/users/{user_id}", tags=["ADMIN users"])
+@router.delete(
+    "/users/{user_id}", 
+    tags=["ADMIN users"],
+    status_code=HTTP_204_NO_CONTENT,
+)
 async def delete_user_by_user_id(
     user_id: OID = Path(...),
     current_user: User = Depends(get_current_user_authorizer()),
