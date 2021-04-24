@@ -6,9 +6,11 @@ from starlette.status import (
 
 from app.models.user import UserRole
 
-
 def check_permission(roles: List[UserRole], required_role_value: str):
-    result =  next((True for role in roles if role.value == required_role_value), False)
+    return next((True for role in roles if role.value == required_role_value), False)
+
+def check_permission_with_exception(roles: List[UserRole], required_role_value: str):
+    result =  check_permission(roles, required_role_value)
 
     if not result:
         raise HTTPException(

@@ -1,10 +1,15 @@
+from typing import List
 from fastapi import APIRouter, Body, Depends
+from kubernetes.client.api.core_v1_api import CoreV1Api
 
 from app.core.jwt import get_current_user_authorizer
+from app.core.route import getMenuListByUser
 from app.crud.shortcuts import check_free_email
 from app.crud.user import update_user
 from app.db.mongodb import AsyncIOMotorClient, get_database
+from app.kubernetes import get_k8s_core_v1_api
 from app.models.user import User, UserInResponse, UserInUpdate
+from app.models.route import RouteItem
 
 router = APIRouter()
 
@@ -13,8 +18,15 @@ router = APIRouter()
 async def retrieve_current_user(user: User = Depends(get_current_user_authorizer())):
     return UserInResponse(user=user)
 
+@router.get("/users/menuList", response_model=List[RouteItem], response_model_exclude_none=True, tags=["users"])
+async def retrieve_current_user(
+    user: User = Depends(get_current_user_authorizer()),
+    core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
+):
+    menu = getMenuListByUser(user, core_v1_api)
+    return menu
 
-@router.put("/user", response_model=UserInResponse, tags=["users"])
+@router.put("/users", response_model=UserInResponse, tags=["users"])
 async def update_current_user(
     user: UserInUpdate = Body(..., embed=False),
     current_user: User = Depends(get_current_user_authorizer()),

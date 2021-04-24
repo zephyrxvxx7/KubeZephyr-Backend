@@ -11,10 +11,11 @@ from starlette.status import (
 )
 
 from app.core.jwt import get_current_user_authorizer
-from app.core.permission import check_permission
+from app.core.permission import check_permission_with_exception
 from app.crud.user import crud_get_many_user, delete_user, get_user_by_user_id
 from app.db.mongodb import AsyncIOMotorClient, get_database
 from app.models.user import ManyUserInResponse, ManyUser, User
+from app.models.route import RoleEnum
 from app.models.rwmodel import OID
 
 from app.kubernetes import get_k8s_core_v1_api
@@ -31,7 +32,7 @@ async def get_users(
     current_user: User = Depends(get_current_user_authorizer()),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
-    check_permission(current_user.roles, "super")
+    check_permission_with_exception(current_user.roles, RoleEnum.SUPER)
 
     dbuser = await crud_get_many_user(db)
 
@@ -54,7 +55,7 @@ async def delete_user_by_user_id(
     db: AsyncIOMotorClient = Depends(get_database),
     core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
 ):
-    check_permission(current_user.roles, "super")
+    check_permission_with_exception(current_user.roles, RoleEnum.SUPER)
 
     if not await get_user_by_user_id(db, user_id):
         raise HTTPException(

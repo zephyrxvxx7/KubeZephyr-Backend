@@ -43,6 +43,8 @@ metadata:
   labels:
     app: kubezephyr-backend
 spec:
+  nodeSelector:
+    kubernetes.io/hostname: zephyr-lab4
   containers:
   - name: kubezephyr-backend
     image: zephyrxvxx7/kubezephyr_backend
