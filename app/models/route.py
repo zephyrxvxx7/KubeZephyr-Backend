@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel
 from enum import Enum
 
@@ -57,12 +57,16 @@ class RouteMeta(BaseModel):
 
     isLink: Optional[bool]
 
+class Recordable(BaseModel):
+    __root__: Dict[str, str]
+
 
 class RouteItem(BaseModel):
     path: str
     component: Any
     meta: RouteMeta
     name: Optional[str]
+    props: Optional[Recordable];
     alias: Optional[Union[str, List[str]]]
     redirect: Optional[str]
     caseSensitive: Optional[bool]

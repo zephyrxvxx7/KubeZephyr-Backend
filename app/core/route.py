@@ -48,7 +48,7 @@ container_route = RouteItem(**{
         {
             'path': 'create',
             'name': 'containerCreate',
-            'component': '/container/create/index.vue',
+            'component': '/container/create/index',
             'meta': {
                 'title': 'routes.container.create'
             },
@@ -71,14 +71,14 @@ def getMenuListByUser(user: User, core_v1_api: CoreV1Api) -> List[RouteItem]:
         body = k8s_pod.get_pods(core_v1_api=core_v1_api, namespace=str(user.id))
         pods = [item.metadata.name for item in body.items]
 
-        if pods != []:
+        if pods != [] and not next((True for children in container_route.children if children.name == 'containers'), False):
             containers_route.redirect = f"/containers/{pods[0]}"
             containers_route.children = []
             
             for pod in pods:
-                containers_route.children.append({
+                containers_route.children.append(RouteItem(**{
                     'path': pod,
-                    'name': pod,
+                    'name': f'containers{pod.capitalize()}',
                     'component': '/container/containers/index',
                     'props': {
                         'pod_name': pod,
@@ -86,7 +86,7 @@ def getMenuListByUser(user: User, core_v1_api: CoreV1Api) -> List[RouteItem]:
                     'meta': {
                         'title': pod
                     },
-                })
+                }))
             
             container_route.children.append(containers_route)
         
