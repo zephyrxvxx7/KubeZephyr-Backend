@@ -61,6 +61,21 @@ async def get_pod_by_name(
 
     body = k8s_pod.get_pod(core_v1_api=core_v1_api, name=name, namespace=namespace)
 
+    # Clean up the name is default-token volume
+    for index, volume in enumerate(body.spec.volumes):
+        if('default-token' in volume.name):
+            body.spec.volumes.pop(index)
+
+    if(body.spec.volumes == []):
+        body.spec.volumes = None
+    
+    for index, volume_mount in enumerate(body.spec.containers[0].volume_mounts):
+        if('default-token' in volume_mount.name):
+            body.spec.containers[0].volume_mounts.pop(index)
+    
+    if(body.spec.containers[0].volume_mounts == []):
+        body.spec.containers[0].volume_mounts = None
+
     return PodInResponse(pod=PodInCreate(**v1_api.sanitize_for_serialization(body)))
 
 @router.get("/resources/pod/{name}/log",
