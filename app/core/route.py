@@ -64,31 +64,38 @@ containers_route = RouteItem(**{
     },
 })
 
+def generate_containers(user: User, core_v1_api: CoreV1Api):
+    body = k8s_pod.get_pods(core_v1_api=core_v1_api, namespace=str(user.id))
+    pods = [item.metadata.name for item in body.items]
+
+    if pods != []:
+        containers_route.redirect = f"/containers/{pods[0]}"
+        containers_route.children = []
+        
+        for pod in pods:
+            containers_route.children.append(RouteItem(**{
+                'path': pod,
+                'name': f'containers{pod.capitalize()}',
+                'component': '/container/containers/index',
+                'props': {
+                    'pod_name': pod,
+                },
+                'meta': {
+                    'title': pod
+                },
+            }))
+        
+        if(next((True for children in container_route.children if children.name == 'containers'), False)):
+            container_route.children[2] = containers_route
+        else:
+            container_route.children.append(containers_route)
+
+
 def getMenuListByUser(user: User, core_v1_api: CoreV1Api) -> List[RouteItem]:
     if(check_permission(user.roles, RoleEnum.USER)):
         dash_board_route.children[0].component = "/dashboard/namespaceOverview/index"
 
-        body = k8s_pod.get_pods(core_v1_api=core_v1_api, namespace=str(user.id))
-        pods = [item.metadata.name for item in body.items]
-
-        if pods != [] and not next((True for children in container_route.children if children.name == 'containers'), False):
-            containers_route.redirect = f"/containers/{pods[0]}"
-            containers_route.children = []
-            
-            for pod in pods:
-                containers_route.children.append(RouteItem(**{
-                    'path': pod,
-                    'name': f'containers{pod.capitalize()}',
-                    'component': '/container/containers/index',
-                    'props': {
-                        'pod_name': pod,
-                    },
-                    'meta': {
-                        'title': pod
-                    },
-                }))
-            
-            container_route.children.append(containers_route)
+        generate_containers(user, core_v1_api)
         
         return([dash_board_route, container_route])
         
