@@ -11,3 +11,4 @@ Unidecode
 python-dotenv
 databases
 motor
+asyncio

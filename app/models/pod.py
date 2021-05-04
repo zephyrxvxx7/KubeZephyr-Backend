@@ -1,9 +1,7 @@
 from typing import Optional, List
 from pydantic import BaseModel, Field
 
-from app.models.dbmodel import DBModelMixin
-from app.models.rwmodel import MongoModel
-from app.models.k8s_resource.io.k8s.api.core.v1 import PodSpec
+from app.models.k8s_resource.io.k8s.api.core.v1 import PodSpec, PodStatus
 from app.models.k8s_resource.io.k8s.apimachinery.pkg.apis.meta.v1 import ObjectMeta
 class PodInCreate(BaseModel):
     metadata: ObjectMeta = Field(
@@ -23,6 +21,9 @@ class PodInUpdate(BaseModel):
 
 class PodInResponse(BaseModel):
     pod: PodInCreate
+
+class PodInResponseStatus(BaseModel):
+    status: PodStatus
 
 class ManyPodInResponse(BaseModel):
     pod: List[str]

@@ -4,6 +4,7 @@ from kubernetes.client.api.core_v1_api import CoreV1Api
 from kubernetes.client.api_client import ApiClient
 from kubernetes.client.rest import ApiException
 from kubernetes.client.models.v1_pod import V1Pod
+from kubernetes.client.models.v1_pod_status import V1PodStatus
 from kubernetes.client.models.v1_pod_list import V1PodList
 from kubernetes.client.models.v1_status import V1Status
 
@@ -26,6 +27,15 @@ def create_pod(core_v1_api: CoreV1Api, v1_api: ApiClient, namespace: str, pod: P
 def get_pod(core_v1_api: CoreV1Api, name: str, namespace: str) -> V1Pod:
     try:
         return core_v1_api.read_namespaced_pod(name=name, namespace=namespace)
+    except ApiException as e:
+        raise HTTPException(
+            status_code=e.status,
+            detail=eval(e.body)['message']
+        )
+
+def get_status(core_v1_api: CoreV1Api, name: str, namespace: str) -> V1PodStatus:
+    try:
+        return core_v1_api.read_namespaced_pod_status(name=name, namespace=namespace).status
     except ApiException as e:
         raise HTTPException(
             status_code=e.status,
