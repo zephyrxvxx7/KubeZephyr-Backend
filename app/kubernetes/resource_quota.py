@@ -67,11 +67,11 @@ def update_resource_quota(core_v1_api: CoreV1Api, name: str, hard_dict: dict):
 
 def convert_to_ResourceQuotaBase(_dict: dict) -> ResourceQuotaBase:
     return ResourceQuotaBase(
-        limit_cpu = float(parse_quantity(_dict['limits.cpu'])),
-        limit_memory = int(parse_quantity(_dict['limits.memory'])),
+        limit_cpu = str(_dict['limits.cpu']),
+        limit_memory = str(_dict['limits.memory']),
         persistentvolumeclaims = int(_dict['persistentvolumeclaims']),
         pods = int(_dict['pods']),
-        request_storage = int(parse_quantity(_dict['requests.storage']))
+        request_storage = str(_dict['requests.storage'])
     )
 
 def convert_to_dict(quota: ResourceQuotaInUpdate) -> dict:
