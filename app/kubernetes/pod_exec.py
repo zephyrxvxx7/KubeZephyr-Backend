@@ -2,7 +2,7 @@ import json
 import asyncio
 from fastapi import WebSocket, WebSocketDisconnect
 
-from kubernetes.client.api.core_v1_api import CoreV1Api
+from kubernetes.client import CoreV1Api
 from kubernetes.stream import stream
 
 RESIZE_CHANNEL = 4

@@ -1,12 +1,14 @@
 from fastapi import HTTPException
 
-from kubernetes.client.api.core_v1_api import CoreV1Api
-from kubernetes.client.api_client import ApiClient
-from kubernetes.client.rest import ApiException
-from kubernetes.client.models.v1_pod import V1Pod
-from kubernetes.client.models.v1_pod_status import V1PodStatus
-from kubernetes.client.models.v1_pod_list import V1PodList
-from kubernetes.client.models.v1_status import V1Status
+from kubernetes.client import (
+    ApiClient,
+    ApiException,
+    CoreV1Api,
+    V1Pod,
+    V1PodList,
+    V1PodStatus,
+    V1Status
+)
 
 from app.models.pod import (
     PodInCreate, 

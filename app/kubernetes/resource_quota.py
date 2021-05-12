@@ -3,9 +3,13 @@ from starlette.status import (
     HTTP_404_NOT_FOUND,
 )
 
-from kubernetes import client
-from kubernetes.client.api.core_v1_api import CoreV1Api
-from kubernetes.client.rest import ApiException
+from kubernetes.client import (
+    ApiException,
+    CoreV1Api,
+    V1ObjectMeta, 
+    V1ResourceQuota, 
+    V1ResourceQuotaSpec,
+)
 from kubernetes.utils import parse_quantity
 
 from app.models.resource_quota import (
@@ -15,13 +19,13 @@ from app.models.resource_quota import (
 
 
 def create_resource_quota(core_v1_api: CoreV1Api, name:str, hard_dict: dict):
-    body = client.V1ResourceQuota(
+    body = V1ResourceQuota(
         api_version="v1",
         kind="ResourceQuota",
-        metadata=client.V1ObjectMeta(
+        metadata=V1ObjectMeta(
             name=name
         ),
-        spec=client.V1ResourceQuotaSpec(
+        spec=V1ResourceQuotaSpec(
             hard=hard_dict
         )
     )
@@ -50,10 +54,10 @@ def get_resource_used(core_v1_api: CoreV1Api, name: str):
         )
 
 def update_resource_quota(core_v1_api: CoreV1Api, name: str, hard_dict: dict):
-    body = client.V1ResourceQuota(
+    body = V1ResourceQuota(
         api_version="v1",
         kind="ResourceQuota",
-        spec=client.V1ResourceQuotaSpec(
+        spec=V1ResourceQuotaSpec(
             hard=hard_dict
         )
     )

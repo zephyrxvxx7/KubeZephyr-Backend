@@ -1,12 +1,15 @@
-from kubernetes import client
-from kubernetes.client.api.core_v1_api import CoreV1Api
-from kubernetes.client.rest import ApiException
+from kubernetes.client import (
+    ApiException,
+    CoreV1Api,
+    V1Namespace,
+    V1ObjectMeta
+)
 
 def create_namespace(core_v1_api: CoreV1Api, name: str):
-    body = client.V1Namespace(
+    body = V1Namespace(
         api_version="v1",
         kind="Namespace",
-        metadata=client.V1ObjectMeta(
+        metadata=V1ObjectMeta(
             name=name
         )
     )

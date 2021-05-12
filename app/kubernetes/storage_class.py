@@ -1,14 +1,17 @@
-from kubernetes import client
-from kubernetes.client.api.storage_v1_api import StorageV1Api
-from kubernetes.client.rest import ApiException
+from kubernetes.client import (
+    ApiException,
+    StorageV1Api,
+    V1ObjectMeta,
+    V1StorageClass,
+)
 
 from app.core.config import K8S_CEPH_NAMESPACE, K8S_CEPHBLOCKPOOL_NAME
 
 def create_storage_class(storage_v1_api: StorageV1Api, name: str):
-    body = client.V1StorageClass(
+    body = V1StorageClass(
         api_version="storage.k8s.io/v1",
         kind="StorageClass",
-        metadata=client.V1ObjectMeta(
+        metadata=V1ObjectMeta(
             name=name
         ),
         provisioner="rook-ceph.rbd.csi.ceph.com",
@@ -31,5 +34,11 @@ def create_storage_class(storage_v1_api: StorageV1Api, name: str):
 
     try:
         return storage_v1_api.create_storage_class(body=body)
+    except ApiException as e:
+        return e
+
+def delete_storage_class(storage_v1_api: StorageV1Api, name: str):
+    try:
+        return storage_v1_api.delete_storage_class(name=name)
     except ApiException as e:
         return e

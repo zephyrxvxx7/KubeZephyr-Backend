@@ -107,7 +107,6 @@ metadata:
   name: kubezephyr-backend
   namespace: kubezephyr
 spec:
-  type: NodePort
   selector:
     app: kubezephyr-backend
   ports:
