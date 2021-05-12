@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Path, HTTPException
 from fastapi.responses import Response
-from kubernetes.client.api.core_v1_api import CoreV1Api
+from kubernetes.client import CoreV1Api, StorageV1Api
 
 from starlette.status import (
     HTTP_201_CREATED,
@@ -18,8 +18,9 @@ from app.models.user import ManyUserInResponse, ManyUser, User
 from app.models.route import RoleEnum
 from app.models.rwmodel import OID
 
-from app.kubernetes import get_k8s_core_v1_api
+from app.kubernetes import get_k8s_core_v1_api, get_k8s_storage_v1_api
 from app.kubernetes.namespace import delete_namespace
+from app.kubernetes.storage_class import delete_storage_class
 
 router = APIRouter()
 
@@ -53,7 +54,8 @@ async def delete_user_by_user_id(
     user_id: OID = Path(...),
     current_user: User = Depends(get_current_user_authorizer()),
     db: AsyncIOMotorClient = Depends(get_database),
-    core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
+    core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api),
+    storage_v1_api: StorageV1Api = Depends(get_k8s_storage_v1_api)
 ):
     check_permission_with_exception(current_user.roles, RoleEnum.SUPER)
 
@@ -65,5 +67,6 @@ async def delete_user_by_user_id(
 
     await delete_user(db, user_id)
     delete_namespace(core_v1_api, str(user_id))
+    delete_storage_class(storage_v1_api, str(user_id))
 
     return Response(status_code=HTTP_204_NO_CONTENT)
