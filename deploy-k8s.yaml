@@ -34,6 +34,8 @@ data:
   k8s_client_in_cluster: "True"
   k8s_ceph_namespace: "rook-ceph"
   k8s_cephblockpool_name: "kubezephyr-blockpool"
+  k8s_domain: zephyrxvxx7.me
+  k8s_cluster_issuer: letsencrypt-staging
 ---
 apiVersion: v1
 kind: Pod
@@ -100,6 +102,16 @@ spec:
           configMapKeyRef:
             name: kubezephyr-backend-config
             key: k8s_cephblockpool_name
+      - name: K8S_DOMAIN
+        valueFrom:
+          configMapKeyRef:
+            name: kubezephyr-backend-config
+            key: k8s_domain
+      - name: K8S_CLUSTER_ISSUER
+        valueFrom:
+          configMapKeyRef:
+            name: kubezephyr-backend-config
+            key: k8s_cluster_issuer
 ---
 apiVersion: v1
 kind: Service

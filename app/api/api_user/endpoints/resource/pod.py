@@ -2,19 +2,19 @@ from typing import Optional
 from fastapi import APIRouter, Body, Depends, Path, WebSocket
 from fastapi.param_functions import Query
 from fastapi.responses import Response
-from kubernetes.client.api.core_v1_api import CoreV1Api
-
+from kubernetes.client import ApiClient, CoreV1Api, NetworkingV1beta1Api
 
 from starlette.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT
 )
-from kubernetes.client.api_client import ApiClient
 
 from app.core.jwt import get_current_user_authorizer
 import app.kubernetes.pod as k8s_pod
+import app.kubernetes.service as k8s_service
+import app.kubernetes.ingress as k8s_ingress
 from app.kubernetes.pod_exec import ConnectionManager
-from app.kubernetes import get_k8s_core_v1_api, get_k8s_v1_api
+from app.kubernetes import get_k8s_core_v1_api, get_k8s_networking_v1_api, get_k8s_v1_api
 from app.models.pod import (
     PodInCreate,
     PodInResponse,
@@ -171,9 +171,14 @@ async def update_pod(
 async def delete_pod(
     name: str = Path(...),
     user: User = Depends(get_current_user_authorizer()),
-    core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
+    core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api),
+    networking_v1_api: NetworkingV1beta1Api = Depends(get_k8s_networking_v1_api),
 ):
     namespace = str(user.id)
+
+    if(k8s_ingress.check_bound(networking_v1_api=networking_v1_api, name=name, namespace=namespace)):
+        k8s_ingress.delete_ingress(networking_v1_api=networking_v1_api, name=name, namespace=namespace)
+        k8s_service.delete_service(core_v1_api=core_v1_api, name=name, namespace=namespace)
 
     k8s_pod.delete_pod(core_v1_api=core_v1_api, name=name, namespace=namespace)
 

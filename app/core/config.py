@@ -39,6 +39,8 @@ else:
 K8S_CLIENT_IN_CLUSTER = bool(os.getenv("K8S_CLIENT_IN_CLUSTER", False))
 K8S_CEPH_NAMESPACE = os.getenv("K8S_CEPH_NAMESPACE", "rook-ceph")
 K8S_CEPHBLOCKPOOL_NAME = os.getenv("K8S_CEPHBLOCKPOOL_NAME", "kubezephyr-blockpool")
+K8S_DOMAIN = os.getenv("K8S_DOMAIN", "")
+K8S_CLUSTER_ISSUER = os.getenv("K8S_CLUSTER_ISSUER", "letsencrypt")
 
 database_name = MONGO_DB
 article_collection_name = "articles"
