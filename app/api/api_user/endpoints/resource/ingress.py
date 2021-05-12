@@ -92,7 +92,7 @@ async def get_ingresses(
     return ManyIngressInResponse(ingress=[
         ManyIngress(
             name=ingress.metadata.name,
-            sub_domain=ingress.tls[0].hosts[0],
+            sub_domain=ingress.spec.tls[0].hosts[0].split('.')[0],
             allow_cors=ingress.metadata.annotations.get('nginx.ingress.kubernetes.io/enable-cors', False) == 'true'
         )
         for ingress in ingresses

@@ -21,7 +21,8 @@ def create_service(core_v1_api: CoreV1Api, name: str, namespace: str, port: int)
                 "app": name
             },
             ports=[V1ServicePort(
-                port=port
+                port=port,
+                target_port=port
             )]
         )
     )
