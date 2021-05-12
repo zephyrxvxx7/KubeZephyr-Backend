@@ -34,6 +34,13 @@ async def get_user_by_user_id(conn: AsyncIOMotorClient, id: OID) -> UserInDB:
     else:
         return None
 
+async def get_user_by_real_name(conn: AsyncIOMotorClient, realName: str) -> UserInDB:
+    row = await conn[database_name][users_collection_name].find_one({"realName": realName})
+    if row:
+        return UserInDB.from_mongo(row)
+    else:
+        return None
+
 async def crud_get_many_user(conn: AsyncIOMotorClient) -> List[UserInDB]:
     user_doc = conn[database_name][users_collection_name].find()
     
@@ -88,7 +95,7 @@ async def update_user(conn: AsyncIOMotorClient, email: EmailStr, user: UserInUpd
     dbuser.updated_at = get_utcnow()
 
     await conn[database_name][users_collection_name].update_one(
-        {"_id": dbuser.id}, {'$set': UserInDB.mongo(dbuser)}
+        {"_id": dbuser.id}, {'$set': dbuser.mongo()}
     )
 
     return dbuser

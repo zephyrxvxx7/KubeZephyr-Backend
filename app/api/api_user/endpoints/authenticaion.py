@@ -8,7 +8,7 @@ from kubernetes import client
 
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.core.jwt import create_access_token
-from app.crud.shortcuts import check_free_email
+from app.crud.shortcuts import check_free_email, check_free_real_name
 from app.crud.user import create_user, get_user_by_email
 from app.db.mongodb import AsyncIOMotorClient, get_database
 from app.models.user import User, UserInCreate, UserInLogin, UserInResponse
@@ -46,6 +46,7 @@ async def register(
         storage_v1_api = Depends(get_k8s_storage_v1_api)
 ):
     await check_free_email(db, user.email)
+    await check_free_real_name(db, user.realName)
 
     async with await db.start_session() as s:
         async with s.start_transaction():

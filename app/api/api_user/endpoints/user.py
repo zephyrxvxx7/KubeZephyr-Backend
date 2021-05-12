@@ -4,7 +4,7 @@ from kubernetes.client.api.core_v1_api import CoreV1Api
 
 from app.core.jwt import get_current_user_authorizer
 from app.core.route import getMenuListByUser
-from app.crud.shortcuts import check_free_email
+from app.crud.shortcuts import check_free_email, check_free_real_name
 from app.crud.user import update_user
 from app.db.mongodb import AsyncIOMotorClient, get_database
 from app.kubernetes import get_k8s_core_v1_api
@@ -39,7 +39,10 @@ async def update_current_user(
     if user.desc == current_user.desc:
         user.desc = None
 
-    await check_free_email(db, user.email)
+    if(user.email):
+        await check_free_email(db, user.email)
+    if(user.realName):
+        await check_free_real_name(db, user.realName)
 
     dbuser = await update_user(db, current_user.email, user)
     return UserInResponse(user=User(**dbuser.dict(), token=current_user.token))
