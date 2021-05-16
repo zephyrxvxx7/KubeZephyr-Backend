@@ -34,84 +34,91 @@ data:
   k8s_client_in_cluster: "True"
   k8s_ceph_namespace: "rook-ceph"
   k8s_cephblockpool_name: "kubezephyr-blockpool"
-  k8s_domain: zephyrxvxx7.me
+  k8s_domain: zephyr-kubernetes.tech
   k8s_cluster_issuer: letsencrypt-staging
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: kubezephyr-backend
   namespace: kubezephyr
-  labels:
-    app: kubezephyr-backend
 spec:
-  nodeSelector:
-    kubernetes.io/hostname: zephyr-lab4
-  containers:
-  - name: kubezephyr-backend
-    image: zephyrxvxx7/kubezephyr_backend
-    resources:
-      limits:
-        memory: "512Mi"
-        cpu: "500m"
-    ports:
-      - containerPort: 1234
-    env:
-      - name: SECRET_KEY
-        valueFrom:
-          secretKeyRef:
-            name: kubezephyr-backend-secret
-            key: secret_key
-      - name: MONGO_HOST
-        valueFrom:
-          configMapKeyRef:
-            name: kubezephyr-backend-config
-            key: mongo_host
-      - name: MONGO_PORT
-        valueFrom:
-          configMapKeyRef:
-            name: kubezephyr-backend-config
-            key: mongo_port
-      - name: MONGO_USER
-        valueFrom:
-          configMapKeyRef:
-            name: kubezephyr-backend-config
-            key: mongo_user
-      - name: MONGO_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: kubezephyr-backend-secret
-            key: mongo_password
-      - name: MONGO_DB
-        valueFrom:
-          configMapKeyRef:
-            name: kubezephyr-backend-config
-            key: mongo_db
-      - name: K8S_CLIENT_IN_CLUSTER
-        valueFrom:
-          configMapKeyRef:
-            name: kubezephyr-backend-config
-            key: k8s_client_in_cluster
-      - name: K8S_CEPH_NAMESPACE
-        valueFrom:
-          configMapKeyRef:
-            name: kubezephyr-backend-config
-            key: k8s_ceph_namespace
-      - name: K8S_CEPHBLOCKPOOL_NAME
-        valueFrom:
-          configMapKeyRef:
-            name: kubezephyr-backend-config
-            key: k8s_cephblockpool_name
-      - name: K8S_DOMAIN
-        valueFrom:
-          configMapKeyRef:
-            name: kubezephyr-backend-config
-            key: k8s_domain
-      - name: K8S_CLUSTER_ISSUER
-        valueFrom:
-          configMapKeyRef:
-            name: kubezephyr-backend-config
-            key: k8s_cluster_issuer
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubezephyr-backend
+  template:
+    metadata:
+      labels:
+        app: kubezephyr-backend
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: zephyr-lab4
+      containers:
+      - name: kubezephyr-backend
+        image: zephyrxvxx7/kubezephyr_backend
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+          - containerPort: 1234
+        env:
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: kubezephyr-backend-secret
+                key: secret_key
+          - name: MONGO_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: mongo_host
+          - name: MONGO_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: mongo_port
+          - name: MONGO_USER
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: mongo_user
+          - name: MONGO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: kubezephyr-backend-secret
+                key: mongo_password
+          - name: MONGO_DB
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: mongo_db
+          - name: K8S_CLIENT_IN_CLUSTER
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: k8s_client_in_cluster
+          - name: K8S_CEPH_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: k8s_ceph_namespace
+          - name: K8S_CEPHBLOCKPOOL_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: k8s_cephblockpool_name
+          - name: K8S_DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: k8s_domain
+          - name: K8S_CLUSTER_ISSUER
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: k8s_cluster_issuer
 ---
 apiVersion: v1
 kind: Service
