@@ -1,4 +1,3 @@
-from typing import Optional
 from fastapi import APIRouter, Body, Depends, Path
 from fastapi.responses import Response
 from kubernetes.client import ApiClient, CoreV1Api, NetworkingV1beta1Api
@@ -41,19 +40,19 @@ async def create_ingress(
 
     pod = k8s_pod.get_pod(core_v1_api=core_v1_api, name=ingress.bound_pod_name, namespace=namespace)
 
-    k8s_service.create_service(
-        core_v1_api=core_v1_api, 
-        name=ingress.bound_pod_name, 
-        namespace=namespace, 
-        port=pod.spec.containers[0].ports[0].container_port
-    )
-
     body = k8s_ingress.create_ingress(
         networking_v1_api=networking_v1_api,
         namespace=namespace,
         port=pod.spec.containers[0].ports[0].container_port,
         realName=user.realName.lower(),
         ingress=ingress
+    )
+
+    k8s_service.create_service(
+        core_v1_api=core_v1_api, 
+        name=ingress.bound_pod_name, 
+        namespace=namespace, 
+        port=pod.spec.containers[0].ports[0].container_port
     )
 
     return IngressInResponse(ingress=Ingress(**v1_api.sanitize_for_serialization(body)))
@@ -64,7 +63,7 @@ async def create_ingress(
     response_model_exclude_none=True,
     tags=["Resources"]
 )
-async def get_pod_ingress_by_name(
+async def get_ingress_by_name(
     name: str = Path(...),
     user: User = Depends(get_current_user_authorizer()),
     networking_v1_api: NetworkingV1beta1Api = Depends(get_k8s_networking_v1_api),
