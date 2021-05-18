@@ -14,6 +14,7 @@ from app.kubernetes import get_k8s_core_v1_api, get_k8s_v1_api
 from app.models.pvc import (
     PvcInCreate,
     PvcInResponse,
+    ManyPvc,
     ManyPvcInResponse,
     PvcInUpdate
 )
@@ -69,7 +70,7 @@ async def get_pvcs_name(
 
     body = k8s_pvc.get_pvcs(core_v1_api=core_v1_api, namespace=namespace)
 
-    return ManyPvcInResponse(pvc=[item.metadata.name for item in body.items])
+    return ManyPvcInResponse(pvc=[ManyPvc(name=item.metadata.name, accessMode=item.spec.access_modes[0], storage=item.spec.resources.requests['storage']) for item in body.items])
 
 @router.put("/resources/pvc/{name}",
     response_model=PvcInResponse,

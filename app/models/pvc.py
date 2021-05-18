@@ -22,5 +22,10 @@ class PvcInUpdate(BaseModel):
 class PvcInResponse(BaseModel):
     pvc: PvcInCreate
 
+class ManyPvc(BaseModel):
+    name: str
+    accessMode: str
+    storage: str
+
 class ManyPvcInResponse(BaseModel):
-    pvc: List[str]
+    pvc: List[ManyPvc]
