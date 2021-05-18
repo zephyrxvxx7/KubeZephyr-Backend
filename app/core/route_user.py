@@ -90,6 +90,14 @@ volume_route = RouteItem(**{
                 'title': 'routes.volume.create'
             },
         },
+        {
+            'path': 'edit',
+            'name': 'volumeEdit',
+            'component': '/volume/edit/index',
+            'meta': {
+                'title': 'routes.volume.edit'
+            },
+        }
     ]
 })
 
