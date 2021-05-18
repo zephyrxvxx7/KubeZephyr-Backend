@@ -5,7 +5,7 @@ from kubernetes.client import (
     V1StorageClass,
 )
 
-from app.core.config import K8S_CEPH_NAMESPACE, K8S_CEPHBLOCKPOOL_NAME
+from app.core.config import K8S_CEPH_NAMESPACE, K8S_CEPHFILESYSTEM_NAME, K8S_CEPHFILESYSTEM_POOL
 
 def create_storage_class(storage_v1_api: StorageV1Api, name: str):
     body = V1StorageClass(
@@ -14,19 +14,17 @@ def create_storage_class(storage_v1_api: StorageV1Api, name: str):
         metadata=V1ObjectMeta(
             name=name
         ),
-        provisioner="rook-ceph.rbd.csi.ceph.com",
+        provisioner="rook-ceph.cephfs.csi.ceph.com",
         parameters={
             "clusterID": K8S_CEPH_NAMESPACE,
-            "pool": K8S_CEPHBLOCKPOOL_NAME,
-            "imageFormat": "2",
-            "imageFeatures": "layering",
-            "csi.storage.k8s.io/provisioner-secret-name": "rook-csi-rbd-provisioner",
+            "fsName": K8S_CEPHFILESYSTEM_NAME,
+            "pool": K8S_CEPHFILESYSTEM_POOL,
+            "csi.storage.k8s.io/provisioner-secret-name": "rook-csi-cephfs-provisioner",
             "csi.storage.k8s.io/provisioner-secret-namespace": K8S_CEPH_NAMESPACE,
-            "csi.storage.k8s.io/controller-expand-secret-name": "rook-csi-rbd-provisioner",
+            "csi.storage.k8s.io/controller-expand-secret-name": "rook-csi-cephfs-provisioner",
             "csi.storage.k8s.io/controller-expand-secret-namespace": K8S_CEPH_NAMESPACE,
-            "csi.storage.k8s.io/node-stage-secret-name": "rook-csi-rbd-node",
+            "csi.storage.k8s.io/node-stage-secret-name": "rook-csi-cephfs-node",
             "csi.storage.k8s.io/node-stage-secret-namespace": K8S_CEPH_NAMESPACE,
-            "csi.storage.k8s.io/fstype": "ext4"
         },
         allow_volume_expansion=True,
         reclaim_policy="Delete"

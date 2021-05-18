@@ -33,7 +33,8 @@ data:
   mongo_db: KubeZephyr
   k8s_client_in_cluster: "True"
   k8s_ceph_namespace: "rook-ceph"
-  k8s_cephblockpool_name: "kubezephyr-blockpool"
+  k8s_cephfilesystem_name: "myfs"
+  k8s_cephfilesystem_pool: "myfs-data0"
   k8s_domain: zephyr-kubernetes.tech
   k8s_cluster_issuer: letsencrypt-staging
 ---
@@ -104,11 +105,16 @@ spec:
               configMapKeyRef:
                 name: kubezephyr-backend-config
                 key: k8s_ceph_namespace
-          - name: K8S_CEPHBLOCKPOOL_NAME
+          - name: K8S_CEPHFILESYSTEM_NAME
             valueFrom:
               configMapKeyRef:
                 name: kubezephyr-backend-config
-                key: k8s_cephblockpool_name
+                key: k8s_cephfilesystem_name
+          - name: K8S_CEPHFILESYSTEM_POOL
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: k8s_cephfilesystem_pool
           - name: K8S_DOMAIN
             valueFrom:
               configMapKeyRef:
