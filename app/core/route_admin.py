@@ -36,6 +36,54 @@ dashboard_route = RouteItem(**{
 })
 
 
+terminal_route = RouteItem(**{
+    'path': '/terminal',
+    'name': 'Terminal',
+    'component': 'LAYOUT',
+    'redirect': '/terminal/ceph',
+    'meta': {
+        "title": 'routes.adminTerminal.terminal',
+        "icon": 'bx:bx-terminal',
+    },
+    "children": [
+        {
+            'path': 'system',
+            'name': 'systemTerminal',
+            'component': '/admin/terminal/webTerminal',
+            'props': {
+                'podNamespace': 'kubezephyr',
+                'podName': 'kubectl',
+            },
+            'meta': {
+                'title': 'routes.adminTerminal.systemTerminal'
+            }
+        },
+        {
+            'path': 'ceph',
+            'name': 'cephTerminal',
+            'component': '/admin/terminal/webTerminal',
+            'props': {
+                'podNamespace': 'rook-ceph',
+                'podName': 'rook-ceph-tools',
+            },
+            'meta': {
+                'title': 'routes.adminTerminal.cephTerminal'
+            }
+        },
+    ]
+})
+
+
+users_route = RouteItem(**{
+    'path': '/users',
+    'name': 'Users',
+    'component': '/admin/users/index',
+    'meta': {
+        "title": 'routes.adminUsers.users',
+        "icon": 'bx:bx-user',
+    },
+})
+
+
 def generate_admin_route(user: User, core_v1_api: CoreV1Api):
-    
-    return([dashboard_route])
+    return([dashboard_route, terminal_route, users_route, ])
