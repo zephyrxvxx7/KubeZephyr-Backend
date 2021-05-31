@@ -26,7 +26,6 @@ async def check_free_real_name(
         conn: AsyncIOMotorClient, realNmae: str
 ):
     user_by_real_name = await get_user_by_real_name(conn, realNmae)
-    print(user_by_real_name)
     if user_by_real_name:
         raise HTTPException(
             status_code=HTTP_422_UNPROCESSABLE_ENTITY,
