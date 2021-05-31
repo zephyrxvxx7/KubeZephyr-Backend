@@ -20,6 +20,7 @@ type: Opaque
 data:
   secret_key: MTIzNDU2
   mongo_password: amkzMms3YXU0YTgz
+  grafana_api_token: "ZXlKcklqb2lhR1YxYW5wb1QyaHBORGxDVTJ0RFdtTkJVMmhvVHpWeVpERm1WRXRsY0dnaUxDSnVJam9pUzNWaVpWcGxjR2g1Y2lJc0ltbGtJam94ZlE9PQ=="
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -37,6 +38,7 @@ data:
   k8s_cephfilesystem_pool: "myfs-data0"
   k8s_domain: zephyr-kubernetes.tech
   k8s_cluster_issuer: letsencrypt-staging
+  grafana_server: "http://monitoring-grafana.monitoring"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -57,7 +59,7 @@ spec:
         kubernetes.io/hostname: zephyr-lab4
       containers:
       - name: kubezephyr-backend
-        image: zephyrxvxx7/kubezephyr_backend
+        image: zephyrxvxx7/kubezephyr_backend:latest
         resources:
           limits:
             memory: "256Mi"
@@ -125,6 +127,16 @@ spec:
               configMapKeyRef:
                 name: kubezephyr-backend-config
                 key: k8s_cluster_issuer
+          - name: GRAFANA_SERVER
+            valueFrom:
+              configMapKeyRef:
+                name: kubezephyr-backend-config
+                key: grafana_server
+          - name: GRAFANA_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: kubezephyr-backend-secret
+                key: grafana_api_token
 ---
 apiVersion: v1
 kind: Service

@@ -25,6 +25,14 @@ dashboard_route = RouteItem(**{
             }
         },
         {
+            'path': 'cluster-alerts',
+            'name': 'clusterAlerts',
+            'component': '/admin/dashboard/clusterAlerts',
+            'meta': {
+                'title': 'routes.adminDashboard.clusterAlerts'
+            }
+        },
+        {
             'path': 'ceph-overview',
             'name': 'cephOverview',
             'component': '/admin/dashboard/cephOverview',
@@ -79,11 +87,21 @@ users_route = RouteItem(**{
     'name': 'Users',
     'component': '/admin/users/index',
     'meta': {
-        "title": 'routes.adminUsers.users',
+        "title": 'routes.adminUsers.manage',
         "icon": 'bx:bx-user',
+    },
+})
+
+alert_channel_route = RouteItem(**{
+    'path': '/alert-channel',
+    'name': 'AlertChannel',
+    'component': '/admin/alertChannel/index',
+    'meta': {
+        "title": 'routes.adminAlertChannel.manage',
+        "icon": 'carbon:notification',
     },
 })
 
 
 def generate_admin_route(user: User, core_v1_api: CoreV1Api):
-    return([dashboard_route, terminal_route, users_route, ])
+    return([dashboard_route, terminal_route, users_route, alert_channel_route])

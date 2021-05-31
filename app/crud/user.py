@@ -6,11 +6,12 @@ from typing import List
 from app.db.mongodb import AsyncIOMotorClient
 from app.core.utils import get_utcnow
 from app.core.config import database_name, users_collection_name
-from app.models.user import UserInCreate, UserInDB, UserInUpdate
+from app.models.user import User, UserInCreate, UserInDB, UserInUpdate
 from app.models.rwmodel import OID
 from app.kubernetes.namespace import create_namespace
 from app.kubernetes.resource_quota import create_resource_quota
 from app.kubernetes.storage_class import create_storage_class
+from app.grafana.alerting_notification_channel import generate_alert_channel_template, create_alert_channel
 
 async def get_user(conn: AsyncIOMotorClient, username: str) -> UserInDB:
     row = await conn[database_name][users_collection_name].find_one({"username": username})
@@ -79,6 +80,7 @@ async def init_user(conn: AsyncIOMotorClient, dbuser: UserInDB, core_v1_api: Cor
             "requests.storage": "5Gi"
         })
         create_storage_class(storage_v1_api, str(dbuser.id))
+        create_alert_channel(generate_alert_channel_template(user=User(**dbuser.dict(), token='')))
 
     return dbuser
 

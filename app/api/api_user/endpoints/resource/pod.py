@@ -15,6 +15,7 @@ import app.kubernetes.service as k8s_service
 import app.kubernetes.ingress as k8s_ingress
 from app.kubernetes.pod_exec import ConnectionManager
 from app.kubernetes import get_k8s_core_v1_api, get_k8s_networking_v1_api, get_k8s_v1_api
+from app.grafana.dashboard import generate_pod_dashboard_with_alert, create_dashboard, delete_dashboard_by_uid
 from app.models.pod import (
     PodInCreate,
     PodInResponse,
@@ -47,6 +48,7 @@ async def create_pod(
         pod.metadata.labels = {"app": pod.metadata.name}
 
     body = k8s_pod.create_pod(core_v1_api=core_v1_api, v1_api=v1_api, namespace=namespace, pod=pod)
+    create_dashboard(generate_pod_dashboard_with_alert(user=user, pod_name=pod.metadata.name))
 
     return PodInResponse(pod=PodInCreate(**v1_api.sanitize_for_serialization(body)))
 
@@ -181,5 +183,6 @@ async def delete_pod(
         k8s_service.delete_service(core_v1_api=core_v1_api, name=name, namespace=namespace)
 
     k8s_pod.delete_pod(core_v1_api=core_v1_api, name=name, namespace=namespace)
+    delete_dashboard_by_uid(f'{namespace}-{name}')
 
     return Response(status_code=HTTP_204_NO_CONTENT)

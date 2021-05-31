@@ -43,6 +43,9 @@ K8S_CEPHFILESYSTEM_POOL = os.getenv("K8S_CEPHFILESYSTEM_POOL", "myfs-data")
 K8S_DOMAIN = os.getenv("K8S_DOMAIN", "")
 K8S_CLUSTER_ISSUER = os.getenv("K8S_CLUSTER_ISSUER", "letsencrypt")
 
+GRAFANA_API_KEY = os.getenv("GRAFANA_API_KEY", "")
+GRAFANA_SERVER = os.getenv("GRAFANA_SERVER", "")
+
 database_name = MONGO_DB
 article_collection_name = "articles"
 favorites_collection_name = "favorites"
