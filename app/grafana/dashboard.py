@@ -1100,7 +1100,7 @@ def generate_pod_dashboard_with_alert(user: User, pod_name: str):
             'refresh': '10s',
             'tags': ['kubernetes', 'pods', 'KubeZephyr'],
             'timezone': 'browser',
-            'title': f'POD Overview with alerts',
+            'title': f'{user.realName}-{pod_name}: POD Overview with alerts',
             'uid': f'{namespace}-{pod_name}',
         },
         'folderId': 32
