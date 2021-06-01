@@ -81,6 +81,16 @@ terminal_route = RouteItem(**{
     ]
 })
 
+containers_route = RouteItem(**{
+    'path': '/containers',
+    'name': 'Containers',
+    'component': '/admin/containers/index',
+    'meta': {
+        "title": 'routes.adminContainers.manage',
+        "icon": 'simple-icons:kubernetes',
+    },
+})
+
 
 users_route = RouteItem(**{
     'path': '/users',
@@ -104,4 +114,4 @@ alert_channel_route = RouteItem(**{
 
 
 def generate_admin_route(user: User, core_v1_api: CoreV1Api):
-    return([dashboard_route, terminal_route, users_route, alert_channel_route])
+    return([dashboard_route, terminal_route, containers_route, users_route, alert_channel_route])
