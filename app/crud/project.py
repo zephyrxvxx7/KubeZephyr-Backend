@@ -1,6 +1,4 @@
-from typing import List, Optional
-
-from slugify import slugify
+from typing import List
 
 from app.models.rwmodel import OID
 from app.models.project import (
