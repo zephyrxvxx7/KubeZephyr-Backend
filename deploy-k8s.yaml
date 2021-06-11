@@ -160,7 +160,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
     # CORS
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://kubezephyr.zephyr-kubernetes.tech"
     # cert-manager
     cert-manager.io/cluster-issuer: letsencrypt
     ingress.kubernetes.io/ssl-redirect: "true"
