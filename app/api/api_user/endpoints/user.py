@@ -18,8 +18,8 @@ router = APIRouter()
 async def retrieve_current_user(user: User = Depends(get_current_user_authorizer())):
     return UserInResponse(user=user)
 
-@router.get("/users/menuList", response_model=List[RouteItem], response_model_exclude_none=True, tags=["users"])
-async def retrieve_current_user(
+@router.get("/users/menu-list", response_model=List[RouteItem], response_model_exclude_none=True, tags=["users"])
+async def get_menu_list(
     user: User = Depends(get_current_user_authorizer()),
     core_v1_api: CoreV1Api = Depends(get_k8s_core_v1_api)
 ):

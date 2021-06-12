@@ -94,7 +94,7 @@ async def get_alert_channels(
 @router.put(
     "/alert-channel/{uid}",
     response_model=AlertChannelInResponse,
-    tags=["ADMIN Resources Quota"]
+    tags=["ADMIN alerting notification channels"]
 )
 async def update_alert_channel_by_uid(
     uid: str = Path(...),
