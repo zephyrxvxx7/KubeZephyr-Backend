@@ -1,7 +1,4 @@
-import copy
 from kubernetes.client import CoreV1Api
-
-import app.kubernetes.pod as k8s_pod
 
 from app.models.user import User
 from app.models.route import RouteItem
