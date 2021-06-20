@@ -9,13 +9,25 @@ from .route_user import generate_user_route
 from .route_admin import generate_admin_route
 
 common_route = RouteItem(**{
-    'path': '/change-password',
-    'name': 'ChangePassword',
-    'component': '/sys/changePassword/index',
+    'path': '/account',
+    'name': 'Account',
+    'component': 'LAYOUT',
+    'redirect': '/account/change-password',
     'meta': {
-        "title": 'sys.changePassword.title',
-        "icon": 'carbon:password',
+        "title": 'routes.account.account',
+        "icon": 'mdi:card-account-details-outline',
     },
+    "children": [
+        {
+            'path': 'change-password',
+            'name': 'ChangePassword',
+            'component': '/sys/changePassword/index',
+            'meta': {
+                "title": 'routes.account.password',
+                "icon": 'carbon:password',
+            },
+        },
+    ]
 })
 
 def getMenuListByUser(user: User, core_v1_api: CoreV1Api) -> List[RouteItem]:
