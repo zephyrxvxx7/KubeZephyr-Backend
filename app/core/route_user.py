@@ -101,6 +101,37 @@ volume_route = RouteItem(**{
     ]
 })
 
+account_route = RouteItem(**{
+    'path': '/account',
+    'name': 'Account',
+    'component': 'LAYOUT',
+    'redirect': '/account/change-password',
+    'meta': {
+        "title": 'routes.account.account',
+        "icon": 'mdi:card-account-details-outline',
+    },
+    "children": [
+        {
+            'path': 'change-password',
+            'name': 'ChangePassword',
+            'component': '/account/changePassword/index',
+            'meta': {
+                "title": 'routes.account.password',
+                "icon": 'carbon:password',
+            },
+        },
+        {
+            'path': 'alert-channel',
+            'name': 'UserAlertChannel',
+            'component': '/account/alertChannel/index',
+            'meta': {
+                "title": 'routes.account.alertChannel',
+                "icon": 'fluent:alert-on-24-regular',
+            },
+        },
+    ]
+})
+
 def generate_containers(user: User, core_v1_api: CoreV1Api):
     namespace = str(user.id)
 
@@ -173,4 +204,4 @@ def generate_containers(user: User, core_v1_api: CoreV1Api):
 def generate_user_route(user: User, core_v1_api: CoreV1Api):
     _container_route = generate_containers(user, core_v1_api)
     
-    return([dashboard_route, _container_route, volume_route])
+    return([dashboard_route, _container_route, volume_route, account_route])

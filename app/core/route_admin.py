@@ -109,6 +109,28 @@ alert_channel_route = RouteItem(**{
     },
 })
 
+account_route = RouteItem(**{
+    'path': '/account',
+    'name': 'Account',
+    'component': 'LAYOUT',
+    'redirect': '/account/change-password',
+    'meta': {
+        "title": 'routes.account.account',
+        "icon": 'mdi:card-account-details-outline',
+    },
+    "children": [
+        {
+            'path': 'change-password',
+            'name': 'ChangePassword',
+            'component': '/account/changePassword/index',
+            'meta': {
+                "title": 'routes.account.password',
+                "icon": 'carbon:password',
+            },
+        },
+    ]
+})
+
 
 def generate_admin_route(user: User, core_v1_api: CoreV1Api):
-    return([dashboard_route, terminal_route, containers_route, users_route, alert_channel_route])
+    return([dashboard_route, terminal_route, containers_route, users_route, alert_channel_route, account_route])
