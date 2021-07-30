@@ -18,15 +18,29 @@ Then create .env file in project root and set environment variables for applicat
 ```zsh
 touch .env
 echo "PROJECT_NAME=KubeZephyr" >> .env
-echo DATABASE_URL=mongo://$MONGO_USER:$MONGO_PASSWORD@$MONGO_HOST:$MONGO_PORT/$MONGO_DB >> .env
+echo MONGODB_URL=mongo://$MONGO_USER:$MONGO_PASSWORD@$MONGO_HOST:$MONGO_PORT/$MONGO_DB >> .env
 echo SECRET_KEY=$(openssl rand -hex 32) >> .env
 echo ALLOWED_HOSTS='"127.0.0.1", "localhost"' >> .env
+echo K8S_DOMAIN=$DOMAIN >> .env
+echo K8S_CLUSTER_ISSUER=$ISSUER >> .env
+
+echo GRAFANA_API_KEY=$API_KEY >> .env
+echo GRAFANA_SERVER=$SERVER_URL >> .env
 ```
 
 To run the web application in debug use:
 
 ```zsh
 python3 start_server.py
+```
+
+## Build into Docker image
+
+The build file includes the builds and uploads to the Docker Hub.
+Just exec this command line:
+
+```zsh
+./build_docker.sh
 ```
 
 ## Deployment with Docker
@@ -65,6 +79,7 @@ db         - db specific utils
 core       - some general components (jwt, security, configuration)
 api        - handlers for routes
 kubernetes - Operate kubernetes API resources with Python client
+grafana    - Operate Grafana API
 main.py - FastAPI application instance, CORS configuration and api router including
 ```
 
